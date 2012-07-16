@@ -45,6 +45,7 @@ class CGfx : CDisposable
 	override
 	void Dispose()
 	{
+		al_destroy_display(Display);
 		super.Dispose;
 	}
 	
