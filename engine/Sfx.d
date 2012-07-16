@@ -36,6 +36,7 @@ class CSfx : CDisposable
 		{
 			al_attach_audio_stream_to_mixer(MusicStream, al_get_default_mixer());
 			al_set_audio_stream_playmode(MusicStream, ALLEGRO_PLAYMODE.ALLEGRO_PLAYMODE_LOOP);
+			al_set_audio_stream_loop_secs(MusicStream, 0.0, al_get_audio_stream_length_secs(MusicStream));
 		}
 	}
 	

@@ -112,7 +112,6 @@ class CMainMenuMode : CMode
 		super.Dispose;
 		FontManager.Dispose;
 		SoundManager.Dispose;
-		//Music.Dispose;
 	}
 protected:
 	int CurChoice = 0;
@@ -121,5 +120,4 @@ protected:
 	CFontManager FontManager;
 	CSoundManager SoundManager;
 	CSound UISound;
-	//CMusic Music;
 }
