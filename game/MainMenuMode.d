@@ -6,7 +6,6 @@ import engine.SoundManager;
 import engine.Sound;
 import engine.MathTypes;
 
-//import game.Music;
 import game.Mode;
 import game.IGame;
 
@@ -20,10 +19,9 @@ class CMainMenuMode : CMode
 	{
 		super(game);
 		FontManager = new CFontManager;
-		//Music = new CMusic(!Game.Options.Get!(bool)("sfx", "music", true));
 		Font = FontManager.Load("data/fonts/Energon.ttf", 24);
 		TitleFont = FontManager.Load("data/fonts/Energon.ttf", 48);
-		//Music.Play(EMusic.Medium);
+		Game.Sfx.PlayMusic("data/music/medium.xm");
 		
 		SoundManager = new CSoundManager;
 		UISound = SoundManager.Load("data/sounds/gui.ogg");
