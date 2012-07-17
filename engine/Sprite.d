@@ -21,8 +21,8 @@ final class CSprite
 			auto bmp_name = cfg.Get!(const(char)[])("", "bitmap");
 			if(bmp_name == "")
 				throw new Exception("'" ~ file.idup ~ "' needs to specify a bitmap file.");
-			
-			auto bmp = bmp_manager.Load(file);
+
+			auto bmp = bmp_manager.Load(bmp_name);
 			this(bmp, cfg.Get!(int)("", "width", bmp.Width), cfg.Get!(int)("", "height", bmp.Height), cfg.Get!(float)("", "fps", 0));
 		}
 		else
