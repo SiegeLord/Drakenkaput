@@ -5,6 +5,9 @@ import engine.Font;
 import engine.SoundManager;
 import engine.Sound;
 import engine.MathTypes;
+import engine.Sprite;
+import engine.BitmapManager;
+import engine.ConfigManager;
 
 import game.Mode;
 import game.IGame;
@@ -25,6 +28,10 @@ class CMainMenuMode : CMode
 		
 		SoundManager = new CSoundManager;
 		UISound = SoundManager.Load("data/sounds/gui.ogg");
+		
+		ConfigManager = new CConfigManager;
+		BitmapManager = new CBitmapManager;
+		Sprite = new CSprite("data/bitmaps/test.cfg", ConfigManager, BitmapManager);
 	}
 	
 	override
@@ -50,6 +57,8 @@ class CMainMenuMode : CMode
 		al_draw_text(Font.Get, CurChoice == 2 ? select_color : normal_color, mid.X, mid.Y + 45, ALLEGRO_ALIGN_CENTRE, "Quit");
 		
 		al_draw_text(TitleFont.Get, al_map_rgb_f(0.5, 0.5, 1), title_mid.X, title_mid.Y, ALLEGRO_ALIGN_CENTRE, "Cortex Terror");
+		
+		Sprite.Draw(Game.Time, 0, 0);
 	}
 	
 	override
@@ -112,6 +121,8 @@ class CMainMenuMode : CMode
 		super.Dispose;
 		FontManager.Dispose;
 		SoundManager.Dispose;
+		ConfigManager.Dispose;
+		BitmapManager.Dispose;
 	}
 protected:
 	int CurChoice = 0;
@@ -120,4 +131,8 @@ protected:
 	CFontManager FontManager;
 	CSoundManager SoundManager;
 	CSound UISound;
+	
+	CSprite Sprite;
+	CConfigManager ConfigManager;
+	CBitmapManager BitmapManager;
 }
