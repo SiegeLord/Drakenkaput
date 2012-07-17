@@ -22,22 +22,23 @@ final class CSprite
 			if(bmp_name == "")
 				throw new Exception("'" ~ file.idup ~ "' needs to specify a bitmap file.");
 			
-			Bitmap = bmp_manager.Load(bmp_name);
-			Width = min(cfg.Get!(int)("", "width", Bitmap.Width), Bitmap.Width);
-			Height = min(cfg.Get!(int)("", "height", Bitmap.Height), Bitmap.Height);
-			FPS = cfg.Get!(float)("", "fps", 0);
-			NumX = cast(int)(Bitmap.Width / Width);
-			NumY = cast(int)(Bitmap.Height / Height);
+			this(bmp_manager.Load(bmp_name), cfg.Get!(int)("", "width", 0), cfg.Get!(int)("", "height", 0), cfg.Get!(float)("", "fps", 0));
 		}
 		else
 		{
-			Bitmap = bmp_manager.Load(file);
-			Width = Bitmap.Width;
-			Height = Bitmap.Height;
-			FPS = 0;
-			NumX = 1;
-			NumY = 1;
+			this(bmp_manager.Load(file), 0, 0, 0);
 		}
+	}
+	
+	this(CBitmap bitmap, int width, int height, float fps)
+	{
+		Bitmap = bitmap;
+		Width = min(width, Bitmap.Width);
+		Height = min(height, Bitmap.Height);
+		FPS = fps;
+		
+		NumX = cast(int)(Bitmap.Width / Width);
+		NumY = cast(int)(Bitmap.Height / Height);
 	}
 	
 	void Draw(float time, float cx, float cy, float dx, float dy, float theta, ALLEGRO_COLOR col)
