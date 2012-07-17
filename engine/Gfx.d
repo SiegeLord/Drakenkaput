@@ -96,7 +96,7 @@ void DrawCircleGradient(float cx, float cy, float r1, float r2, ALLEGRO_COLOR co
 	al_draw_prim(vtx.ptr, null, null, 0, cast(int)(2 * num_segments), ALLEGRO_PRIM_TYPE.ALLEGRO_PRIM_TRIANGLE_STRIP);
 }
 
-ALLEGRO_COLOR Blend(ALLEGRO_COLOR c1, ALLEGRO_COLOR c2, float frac)
+ALLEGRO_COLOR BlendColors(ALLEGRO_COLOR c1, ALLEGRO_COLOR c2, float frac)
 {
 	return al_map_rgba_f(c1.r + (c2.r - c1.r) * frac, 
 	                     c1.g + (c2.g - c1.g) * frac, 

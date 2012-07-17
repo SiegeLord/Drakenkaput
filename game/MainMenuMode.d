@@ -5,10 +5,11 @@ import engine.Font;
 import engine.SoundManager;
 import engine.Sound;
 import engine.MathTypes;
-import engine.Sprite;
 import engine.BitmapManager;
 import engine.ConfigManager;
+import engine.Sprite;
 
+import game.ParticleEmitter;
 import game.Mode;
 import game.IGame;
 
@@ -32,16 +33,20 @@ class CMainMenuMode : CMode
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
 		Sprite = new CSprite("data/bitmaps/test.cfg", ConfigManager, BitmapManager);
+		Emitter = new CParticleEmitter("data/bitmaps/particles.cfg", Game, ConfigManager, BitmapManager);
+		Emitter.Position = Game.Gfx.ScreenSize / 2;
+		Emitter.Theta = -ALLEGRO_PI / 2;
 	}
 	
 	override
 	EMode Logic(float dt)
 	{
+		Emitter.Logic(dt);
 		return EMode.MainMenu;
 	}
 	
 	override
-	void Draw(float physics_alpha)
+	void Draw()
 	{
 		al_clear_to_color(al_map_rgb_f(0, 0, 0));
 		
@@ -59,6 +64,8 @@ class CMainMenuMode : CMode
 		al_draw_text(TitleFont.Get, al_map_rgb_f(0.5, 0.5, 1), title_mid.X, title_mid.Y, ALLEGRO_ALIGN_CENTRE, "Cortex Terror");
 		
 		Sprite.Draw(Game.Time, 0, 0);
+		
+		Emitter.Draw();
 	}
 	
 	override
@@ -133,6 +140,7 @@ protected:
 	CSound UISound;
 	
 	CSprite Sprite;
+	CParticleEmitter Emitter;
 	CConfigManager ConfigManager;
 	CBitmapManager BitmapManager;
 }

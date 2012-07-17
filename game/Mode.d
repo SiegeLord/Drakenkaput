@@ -21,7 +21,7 @@ class CMode : CDisposable
 	}
 	
 	abstract EMode Logic(float dt);
-	abstract void Draw(float physics_alpha);
+	abstract void Draw();
 	abstract EMode Input(ALLEGRO_EVENT* event);
 	mixin(Prop!("IGame", "Game", "", "protected"));
 protected:

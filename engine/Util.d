@@ -16,3 +16,21 @@ const(char)[] Prop(const(char)[] type, const(char)[] name, const(char)[] get_att
 	}";
 }
 
+T1 Interpolate(T1, T2)(T1 val1, T1 val2, T2 frac)
+{
+	return val1 + frac * (val2 - val1);
+}
+
+void Clamp(T)(ref T val, T max_val)
+{
+	if(val > max_val)
+		val = max_val;
+}
+
+void Clamp(T)(ref T val, T min_val, T max_val)
+{
+	if(val > max_val)
+		val = max_val;
+	else if(val < min_val)
+		val = min_val;
+}

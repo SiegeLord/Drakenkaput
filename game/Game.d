@@ -91,7 +91,7 @@ protected:
 		
 		float cur_time = al_get_time();
 		float accumulator = 0;
-		float physics_alpha = 0;
+		//float physics_alpha = 0;
 		
 		while(1)
 		{
@@ -121,9 +121,9 @@ protected:
 				accumulator -= FixedDt;
 			}
 
-			physics_alpha = accumulator / FixedDt;
+			//physics_alpha = accumulator / FixedDt;
 			
-			mode.Draw(physics_alpha);
+			mode.Draw();
 			
 			al_flip_display();
 		}

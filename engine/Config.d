@@ -2,12 +2,14 @@ module engine.Config;
 
 import engine.Holder;
 import engine.Util;
+import engine.MathTypes;
 
 import allegro5.allegro;
 
 import tango.stdc.stringz;
 import tango.core.Exception;
 import tango.util.Convert;
+import tango.text.convert.Format;
 import tr = tango.core.Traits;
 import tango.text.Util;
 
@@ -65,6 +67,50 @@ class CConfig : CHolder!(ALLEGRO_CONFIG*, al_destroy_config)
 			}
 			return ret;
 		}
+		else static if(is(T == SVector2D))
+		{
+			SVector2D ret;
+			size_t idx = 0;
+			
+			foreach(segment; delimiters(str, " \t"))
+			{
+				if(idx >= 2)
+					break;
+				ret[idx++] = to!(float)(segment);
+			}
+			
+			return ret;
+		}
+		else static if(is(T == ALLEGRO_COLOR))
+		{
+			ALLEGRO_COLOR ret = al_map_rgb_f(0, 0, 0);
+			size_t idx = 0;
+			
+			foreach(segment; delimiters(str, " \t"))
+			{
+				if(idx >= 4)
+					break;
+				auto val = to!(float)(segment);
+				switch(idx)
+				{
+					case 0:
+						ret.r = val;
+						break;
+					case 1:
+						ret.g = val;
+						break;
+					case 2:
+						ret.b = val;
+						break;
+					case 3:
+						ret.a = val;
+						break;
+					default:
+				}
+				idx++;
+			}
+			return ret;
+		}
 		else
 		{
 			return to!(T)(str);
@@ -82,6 +128,14 @@ class CConfig : CHolder!(ALLEGRO_CONFIG*, al_destroy_config)
 				str ~= to!(const(char)[])(e) ~ " ";
 			}
 			str = str[0..$-1];
+		}
+		else static if(is(T == SVector2D))
+		{
+			str ~= Format("{} {}", val.X, val.Y);
+		}
+		else static if(is(T == ALLEGRO_COLOR))
+		{
+			str ~= Format("{} {} {} {}", val.r, val.g, val.b, val.a);
 		}
 		else
 		{

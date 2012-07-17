@@ -67,6 +67,11 @@ final class CSprite
 		Draw(time, 0.0, 0.0, dx, dy, 0.0, al_map_rgb_f(1, 1, 1));
 	}
 	
+	void Draw(float time, float dx, float dy, ALLEGRO_COLOR color)
+	{
+		Draw(time, 0.0, 0.0, dx, dy, 0.0, color);
+	}
+	
 	mixin(Prop!("int", "Width", "", "protected"));
 	mixin(Prop!("int", "Height", "", "protected"));
 	float TimeOffset = 0;
