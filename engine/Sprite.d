@@ -22,11 +22,13 @@ final class CSprite
 			if(bmp_name == "")
 				throw new Exception("'" ~ file.idup ~ "' needs to specify a bitmap file.");
 			
-			this(bmp_manager.Load(bmp_name), cfg.Get!(int)("", "width", 0), cfg.Get!(int)("", "height", 0), cfg.Get!(float)("", "fps", 0));
+			auto bmp = bmp_manager.Load(file);
+			this(bmp, cfg.Get!(int)("", "width", bmp.Width), cfg.Get!(int)("", "height", bmp.Height), cfg.Get!(float)("", "fps", 0));
 		}
 		else
 		{
-			this(bmp_manager.Load(file), 0, 0, 0);
+			auto bmp = bmp_manager.Load(file);
+			this(bmp, bmp.Width, bmp.Height, 0);
 		}
 	}
 	
