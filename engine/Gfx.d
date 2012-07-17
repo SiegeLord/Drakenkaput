@@ -49,16 +49,19 @@ class CGfx : CDisposable
 		super.Dispose;
 	}
 	
+	@property
 	int ScreenWidth()
 	{
 		return al_get_display_width(Display);
 	}
 	
+	@property
 	int ScreenHeight()
 	{
 		return al_get_display_height(Display);
 	}
 	
+	@property
 	SVector2D ScreenSize()
 	{
 		return SVector2D(ScreenWidth, ScreenHeight);

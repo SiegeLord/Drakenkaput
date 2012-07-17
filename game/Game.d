@@ -10,6 +10,7 @@ import engine.Util;
 import game.IGame;
 import game.Mode;
 import game.MainMenuMode;
+import game.GameMode;
 
 import tango.io.Stdout;
 
@@ -68,7 +69,7 @@ class CGame : CDisposable, IGame
 				}
 				case EMode.Game:
 				{
-					//mode = new CGameMode(this, Load);
+					mode = new CGameMode(this);
 					break;
 				}
 				case EMode.Exit:
