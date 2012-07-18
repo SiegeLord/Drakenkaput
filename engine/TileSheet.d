@@ -6,6 +6,7 @@ import engine.ConfigManager;
 import engine.Util;
 
 import tango.text.convert.Format;
+import tango.text.convert.Utf;
 import tango.math.Math;
 
 import allegro5.allegro;
@@ -34,8 +35,12 @@ final class CTileSheet
 		
 		foreach(idx, ref tile; Tiles)
 		{
+			auto section_name = Format("tile_{}", idx);
 			tile.X = TileWidth * (idx % num_x);
 			tile.Y = TileHeight * (idx / num_x);
+			auto symbol_str = cfg.Get!(const(dchar)[])(section_name, "symbol", "");
+			if(symbol_str.length > 0)
+				SymbolMap[symbol_str[0]] = idx;
 		}
 	}
 	
@@ -69,6 +74,17 @@ final class CTileSheet
 		return Tiles[idx];
 	}
 	
+	size_t GetIdx(dchar symbol)
+	{
+		auto idx_ptr = symbol in SymbolMap;
+		if(idx_ptr is null)
+		{
+			char[6] buf;
+			throw new Exception("Symbol " ~ encode(buf, symbol).idup ~ " is not present in this tilesheet.");
+		}
+		return *idx_ptr; 
+	}
+	
 	mixin(Prop!("int", "TileWidth", "", "protected"));
 	mixin(Prop!("int", "TileHeight", "", "protected"));
 protected:
@@ -77,5 +93,6 @@ protected:
 	int TileHeightVal;
 	CBitmap Bitmap;
 	STile[] Tiles;
+	size_t[dchar] SymbolMap;
 }
 

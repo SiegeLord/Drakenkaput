@@ -6,11 +6,14 @@ import engine.TileSheet;
 import engine.MathTypes;
 
 import tango.math.Math;
+import tango.text.convert.Format;
 
 final class CTileMap
 {
 	this(const(char)[] file, CTileSheet sheet, CConfigManager config_manager)
 	{
+		Sheet = sheet;
+		
 		auto cfg = config_manager.Load(file);
 		auto tilesheet_name = cfg.Get!(const(char)[])("", "tilesheet");
 		if(tilesheet_name == "")
@@ -20,14 +23,22 @@ final class CTileMap
 		Height = max(cfg.Get!(int)("", "height", 1), 1);
 		
 		TileMap.length = Width * Height;
-		foreach(idx, ref tile; TileMap)
-			tile = idx % 4;
 		
-		Sheet = sheet;
+		foreach(y; 0..Height)
+		{
+			auto key_str = Format("row_{}", y);
+			auto row_str = cfg.Get!(const(dchar)[])("", key_str, "");
+			foreach(x, symbol; row_str)
+			{
+				if(x >= Width)
+					break;
+				TileMap[y * Width + x] = Sheet.GetIdx(symbol);
+			}
+		}
 	}
 	
 	void Draw(SVector2D screen_pos, SVector2D screen_size)
-	{
+	{		
 		auto tw = Sheet.TileWidth;
 		auto th = Sheet.TileHeight;
 		
@@ -36,6 +47,9 @@ final class CTileMap
 		auto end_x = cast(int)min((screen_pos.X + screen_size.X) / tw + 1, Width);
 		auto end_y = cast(int)min((screen_pos.Y + screen_size.Y) / th + 1, Height);
 		
+		bool was_held = al_is_bitmap_drawing_held();
+		al_hold_bitmap_drawing(true);
+		
 		foreach(y; start_y..end_y)
 		{
 			foreach(x; start_x..end_x)
@@ -43,6 +57,9 @@ final class CTileMap
 				Sheet.DrawTile(TileMap[y * Width + x], x * Sheet.TileWidth, y * Sheet.TileHeight);
 			}
 		}
+		
+		if(!was_held)
+			al_hold_bitmap_drawing(false);
 	}
 protected:
 	size_t[] TileMap;
