@@ -8,6 +8,8 @@ import engine.MathTypes;
 import tango.math.Math;
 import tango.text.convert.Format;
 
+import allegro5.allegro;
+
 final class CTileMap
 {
 	this(const(char)[] file, CTileSheet sheet, CConfigManager config_manager)

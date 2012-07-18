@@ -5,16 +5,16 @@ import allegro5.allegro;
 
 class CCamera
 {
-	this(SVector2D position)
+	this(SVector2D position = SVector2D(0, 0))
 	{
 		Position = position;
 	}
 	
-	void Update(size_t screen_w, size_t screen_h)
+	void Update(SVector2D screen_size)
 	{
 		al_identity_transform(&Transform);
 		al_translate_transform(&Transform, -Position.X, -Position.Y);
-		al_translate_transform(&Transform, screen_w / 2, screen_h / 2);
+		al_translate_transform(&Transform, screen_size.X / 2, screen_size.Y / 2);
 		UseTransform();
 	}
 	

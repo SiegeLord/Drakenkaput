@@ -10,6 +10,7 @@ import engine.ConfigManager;
 import engine.Sprite;
 import engine.TileSheet;
 import engine.TileMap;
+import engine.Camera;
 
 import game.ParticleEmitter;
 import game.Mode;
@@ -41,12 +42,15 @@ class CGameMode : CMode
 		
 		TileSheet = new CTileSheet("data/tilesheets/test.cfg", ConfigManager, BitmapManager);
 		TileMap = new CTileMap("data/maps/test.cfg", TileSheet, ConfigManager);
+		
+		Camera = new CCamera(Game.Gfx.ScreenSize / 2);
 	}
 	
 	override
 	EMode Logic(float dt)
 	{
 		Emitter.Logic(dt);
+		Camera.Update(Game.Gfx.ScreenSize);
 		return EMode.Game;
 	}
 	
@@ -55,12 +59,15 @@ class CGameMode : CMode
 	{
 		al_clear_to_color(al_map_rgb_f(0, 0, 0));
 		
-		TileMap.Draw(Pos, Game.Gfx.ScreenSize / 2);
-		al_draw_rectangle(Pos.X, Pos.Y, Pos.X + (Game.Gfx.ScreenSize / 2).X, Pos.Y + (Game.Gfx.ScreenSize / 2).Y, al_map_rgb_f(1, 0, 0), 1);
+		Camera.UseTransform();
+		
+		TileMap.Draw(Camera.Position - Game.Gfx.ScreenSize / 2, Game.Gfx.ScreenSize);
 		
 		Sprite.Draw(Game.Time, 0, 0);
 		
 		Emitter.Draw();
+		
+		Game.Gfx.ResetTransform();
 	}
 	
 	override
@@ -81,16 +88,16 @@ class CGameMode : CMode
 						return EMode.MainMenu;
 						break;
 					case ALLEGRO_KEY_UP:
-						Pos.Y -= 2;
+						Camera.Position.Y -= 2;
 						break;
 					case ALLEGRO_KEY_DOWN:
-						Pos.Y += 2;
+						Camera.Position.Y += 2;
 						break;
 					case ALLEGRO_KEY_LEFT:
-						Pos.X -= 2;
+						Camera.Position.X -= 2;
 						break;
 					case ALLEGRO_KEY_RIGHT:
-						Pos.X += 2;
+						Camera.Position.X += 2;
 						break;
 					default:
 				}
@@ -117,7 +124,7 @@ protected:
 	CSoundManager SoundManager;
 	CSound UISound;
 	
-	SVector2D Pos;
+	CCamera Camera;
 	CTileSheet TileSheet;
 	CTileMap TileMap;
 	CSprite Sprite;
