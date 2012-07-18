@@ -2,7 +2,7 @@ module engine.PriorityEvent;
 
 import tango.core.Array;
 
-class CPriorityEvent(TArgs...)
+final class CPriorityEvent(TArgs...)
 {
 	alias void delegate(TArgs) TDelegate;
 	

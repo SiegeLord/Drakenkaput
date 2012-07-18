@@ -6,13 +6,17 @@ import engine.SoundManager;
 import engine.Sound;
 import engine.MathTypes;
 import engine.BitmapManager;
+import engine.Config;
 import engine.ConfigManager;
 import engine.Sprite;
 import engine.TileSheet;
 import engine.TileMap;
 import engine.Camera;
 import engine.Util;
+import engine.PriorityEvent;
+import engine.UnorderedEvent;
 
+import game.GameObject;
 import game.ParticleEmitter;
 import game.Mode;
 import game.IGame;
@@ -48,6 +52,9 @@ class CGameMode : CMode
 		TileMap = new CTileMap("data/maps/test.cfg", TileSheet, ConfigManager);
 		
 		Camera = new CCamera(Game.Gfx.ScreenSize / 2);
+		
+		DrawEvent = new typeof(DrawEvent)();
+		LogicEvent = new typeof(LogicEvent)();
 	}
 	
 	override
@@ -55,6 +62,8 @@ class CGameMode : CMode
 	{
 		Emitter.Logic(dt);
 		Camera.Update(Game.Gfx.ScreenSize);
+		
+		LogicEvent.Trigger(dt);
 		
 		return EMode.Game;
 	}
@@ -71,6 +80,8 @@ class CGameMode : CMode
 		Sprite.Draw(Game.Time, 0, 0);
 		
 		Emitter.Draw();
+		
+		DrawEvent.Trigger();
 		
 		Game.Gfx.ResetTransform();
 	}
@@ -131,12 +142,19 @@ class CGameMode : CMode
 		ConfigManager.Dispose;
 		BitmapManager.Dispose;
 	}
+	
+	mixin(Prop!("CPriorityEvent!()", "DrawEvent", "", "protected"));
+	mixin(Prop!("CUnorderedEvent!(float)", "LogicEvent", "", "protected"));
 protected:
 	CFont Font;
 	CFont TitleFont;
 	CFontManager FontManager;
 	CSoundManager SoundManager;
 	CSound UISound;
+	
+	CGameObject[] Objects;
+	CPriorityEvent!() DrawEventVal;
+	CUnorderedEvent!(float) LogicEventVal;
 	
 	CCamera Camera;
 	CTileSheet TileSheet;

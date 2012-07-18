@@ -2,7 +2,7 @@ module engine.UnorderedEvent;
 
 import tango.core.Array;
 
-class CUnorderedEvent(TArgs...)
+final class CUnorderedEvent(TArgs...)
 {
 	alias void delegate(TArgs) TDelegate;
 	

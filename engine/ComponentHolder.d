@@ -5,6 +5,14 @@ interface IComponent
 	void WireUp(CComponentHolder holder);
 }
 
+class CComponent : IComponent
+{
+	void WireUp(CComponentHolder holder)
+	{
+		
+	}
+}
+
 class CComponentHolder
 {
 	void WireUp()
