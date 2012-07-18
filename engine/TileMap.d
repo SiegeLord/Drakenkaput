@@ -63,6 +63,12 @@ final class CTileMap
 		if(!was_held)
 			al_hold_bitmap_drawing(false);
 	}
+	
+	@property
+	SVector2D PixelSize()
+	{
+		return SVector2D(Width * Sheet.TileWidth, Height * Sheet.TileHeight);
+	}
 protected:
 	size_t[] TileMap;
 	CTileSheet Sheet;

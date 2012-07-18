@@ -11,10 +11,14 @@ import engine.Sprite;
 import engine.TileSheet;
 import engine.TileMap;
 import engine.Camera;
+import engine.Util;
 
 import game.ParticleEmitter;
 import game.Mode;
 import game.IGame;
+
+import tango.math.Math;
+import tango.io.Stdout;
 
 import allegro5.allegro;
 import allegro5.allegro_font;
@@ -51,6 +55,7 @@ class CGameMode : CMode
 	{
 		Emitter.Logic(dt);
 		Camera.Update(Game.Gfx.ScreenSize);
+		
 		return EMode.Game;
 	}
 	
@@ -105,6 +110,15 @@ class CGameMode : CMode
 			}
 			default:
 		}
+		
+		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
+		SVector2D max_pos = TileMap.PixelSize - Game.Gfx.ScreenSize / 2;
+		max_pos.X = max(max_pos.X, min_pos.X);
+		max_pos.Y = max(max_pos.Y, min_pos.Y);
+		
+		Clamp(Camera.Position.X, min_pos.X, max_pos.X);
+		Clamp(Camera.Position.Y, min_pos.Y, max_pos.Y);
+		
 		return EMode.Game;
 	}
 	
