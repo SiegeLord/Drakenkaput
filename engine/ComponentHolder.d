@@ -39,6 +39,11 @@ class CComponentHolder
 		}
 		return ret;
 	}
+	
+	bool Get(TComp)(ref TComp comp)
+	{
+		return (comp = Get!(TComp)()) !is null;
+	}
 protected:
 	IComponent[] Components;
 }

@@ -25,6 +25,7 @@ import game.GameObject;
 import game.ParticleEmitter;
 
 import game.components.Position;
+import game.components.Controller;
 
 import tango.math.Math;
 import tango.io.Stdout;
@@ -64,10 +65,11 @@ final class CLevel : CDisposable, ILevel
 		LogicEvent = new typeof(LogicEvent)();
 		Objects = new typeof(Objects)();
 		
-		auto obj = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
-		auto pos = obj.Get!(CPosition)();
+		Player = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
+		auto pos = Player.Get!(CPosition)();
 		pos.X = 100;
 		pos.Y = 100;
+		PlayerController = Player.Get!(CController)();
 	}
 	
 	void Logic(float dt)
@@ -99,17 +101,8 @@ final class CLevel : CDisposable, ILevel
 			{
 				switch(event.keyboard.keycode)
 				{
-					case ALLEGRO_KEY_UP:
-						Camera.Position.Y -= 2;
-						break;
-					case ALLEGRO_KEY_DOWN:
-						Camera.Position.Y += 2;
-						break;
-					case ALLEGRO_KEY_LEFT:
-						Camera.Position.X -= 2;
-						break;
-					case ALLEGRO_KEY_RIGHT:
-						Camera.Position.X += 2;
+					case ALLEGRO_KEY_D:
+						Player.Remove();
 						break;
 					default:
 				}
@@ -118,6 +111,13 @@ final class CLevel : CDisposable, ILevel
 			default:
 		}
 		
+		if(PlayerController !is null)
+			PlayerController.Input(event);
+		
+		CPosition pos;
+		if(Player.Get(pos))
+			Camera.Position = pos.Position;
+		
 		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
 		SVector2D max_pos = TileMap.PixelSize - Game.Gfx.ScreenSize / 2;
 		max_pos.X = max(max_pos.X, min_pos.X);
@@ -125,6 +125,8 @@ final class CLevel : CDisposable, ILevel
 		
 		Clamp(Camera.Position.X, min_pos.X, max_pos.X);
 		Clamp(Camera.Position.Y, min_pos.Y, max_pos.Y);
+		Camera.Position.X = floor(Camera.Position.X);
+		Camera.Position.Y = floor(Camera.Position.Y);
 	}
 	
 	override
@@ -168,6 +170,9 @@ protected:
 	CFontManager FontManager;
 	CSoundManager SoundManager;
 	CSound UISound;
+	
+	CGameObject Player;
+	CController PlayerController;
 	
 	CGreasyBag!(CGameObject) Objects;
 	CPriorityEvent!() DrawEventVal;

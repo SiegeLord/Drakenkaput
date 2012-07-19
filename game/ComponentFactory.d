@@ -34,4 +34,4 @@ const(char)[] FactorySource(const(char)[][] components...)
 	return ret;
 }
 
-mixin(FactorySource("Position", "SimpleAnimation"));
+mixin(FactorySource("Position", "SimpleAnimation", "Velocity", "Controller"));
