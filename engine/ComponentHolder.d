@@ -42,3 +42,16 @@ class CComponentHolder
 protected:
 	IComponent[] Components;
 }
+
+@property
+immutable(char)[] ComponentName(TComp)()
+{
+	return TComp.stringof[1..$];
+}
+
+void RequireComponent(TThis, TComp)(ref TComp component, CComponentHolder holder, TThis this_obj)
+{
+	component = holder.Get!(TComp);
+	if(component is null)
+		throw new Exception("'" ~ ComponentName!(TThis) ~ "' component requires a '" ~ ComponentName!(TComp) ~ "' component.");
+}

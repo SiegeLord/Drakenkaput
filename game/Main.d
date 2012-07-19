@@ -14,9 +14,8 @@ void main()
 	}
 	catch(Exception e)
 	{
-		Stdout("Exception!").nl.nl;
+		Stdout.formatln("Exception: {}:{}", e.file, e.line).nl;
 		Stdout(e.msg).nl.nl;
-		Stdout.formatln("{}:{}", e.file, e.line);
 	}
 	finally
 	{

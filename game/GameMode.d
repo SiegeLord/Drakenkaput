@@ -44,14 +44,13 @@ class CGameMode : CMode, IGameMode
 				{
 					case ALLEGRO_KEY_ESCAPE:
 						return EMode.MainMenu;
-						break;
 					default:
 				}
+				break;
 			}
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
 			{
 				return EMode.Exit;
-				break;
 			}
 			default:
 		}

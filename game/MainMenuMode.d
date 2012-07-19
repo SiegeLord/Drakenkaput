@@ -65,7 +65,6 @@ class CMainMenuMode : CMode
 			case ALLEGRO_EVENT_DISPLAY_CLOSE:
 			{
 				return EMode.Exit;
-				break;
 			}
 			case ALLEGRO_EVENT_KEY_DOWN:
 			{
@@ -73,21 +72,17 @@ class CMainMenuMode : CMode
 				{
 					case ALLEGRO_KEY_ESCAPE:
 						return EMode.Exit;
-						break;
 					case ALLEGRO_KEY_ENTER:
 						switch(CurChoice)
 						{
 							case 0:
 								return EMode.Game;
-								break;
 							case 1:
 								return EMode.Game;
-								break;
 							default: goto case;
 							case 2:
 								return EMode.Exit;
 						}
-						break;
 					case ALLEGRO_KEY_UP:
 						CurChoice--;
 						UISound.Play;

@@ -3,21 +3,21 @@ module game.ComponentFactory;
 import game.GameObject;
 import engine.Config;
 
-alias CGameComponent function(CConfig config) TCreator;
+alias CGameComponent function() TCreator;
 
 TCreator[char[]] Creators;
 
-CGameComponent CreatorFunc(T)(CConfig config)
+CGameComponent CreatorFunc(T)()
 {
-	return new T(config);
+	return new T;
 }
 
-CGameComponent CreateComponent(CConfig config, const(char)[] name)
+CGameComponent CreateComponent(const(char)[] name)
 {
 	auto creator_ptr = name in Creators;
 	if(creator_ptr is null)
 		throw new Exception(name.idup ~ " is not a valid component");
-	return (*creator_ptr)(config);
+	return (*creator_ptr)();
 }
 
 const(char)[] FactorySource(const(char)[][] components...)
@@ -34,4 +34,4 @@ const(char)[] FactorySource(const(char)[][] components...)
 	return ret;
 }
 
-mixin(FactorySource("Position"));
+mixin(FactorySource("Position", "SimpleAnimation"));

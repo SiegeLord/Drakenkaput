@@ -12,9 +12,9 @@ ALL_FILES        := $(GAME_FILES) $(ENGINE_FILES)
 LD_FLAGS         := $(ALLEGRO_LD_FLAGS) $(TANGO_LD_FLAGS)
 
 ifeq ($(DC),ldc2)
-    D_FLAGS          := -g -unittest -L-L. -d-version=DebugDisposable -d-version=UnitTest
+    D_FLAGS          := -w -g -unittest -L-L. -d-version=DebugDisposable -d-version=UnitTest
 else
-    D_FLAGS          := -g -unittest -L-L. -version=DebugDisposable -version=UnitTest
+    D_FLAGS          := -w -g -unittest -L-L. -version=DebugDisposable -version=UnitTest
 endif
 
 # Compiles a D program

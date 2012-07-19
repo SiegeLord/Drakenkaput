@@ -50,7 +50,7 @@ final class CLevel : CDisposable, ILevel
 		
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
-		Sprite = new CSprite("data/bitmaps/test.cfg", ConfigManager, BitmapManager);
+		
 		Emitter = new CParticleEmitter("data/bitmaps/particles.cfg", Game, ConfigManager, BitmapManager);
 		Emitter.Position = Game.Gfx.ScreenSize / 2;
 		Emitter.Theta = -ALLEGRO_PI / 2;
@@ -66,7 +66,8 @@ final class CLevel : CDisposable, ILevel
 		
 		auto obj = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
 		auto pos = obj.Get!(CPosition)();
-		Stdout(pos.X).nl;
+		pos.X = 100;
+		pos.Y = 100;
 	}
 	
 	void Logic(float dt)
@@ -84,8 +85,6 @@ final class CLevel : CDisposable, ILevel
 		Camera.UseTransform();
 		
 		TileMap.Draw(Camera.Position - Game.Gfx.ScreenSize / 2, Game.Gfx.ScreenSize);
-		
-		Sprite.Draw(Game.Time, 0, 0);
 		
 		Emitter.Draw();
 		
@@ -150,7 +149,7 @@ final class CLevel : CDisposable, ILevel
 		Objects.RemoveLater(holder);
 	}
 	
-	@property
+	override @property
 	IGame Game()
 	{
 		return GameMode.Game;
@@ -159,6 +158,8 @@ final class CLevel : CDisposable, ILevel
 	mixin(Prop!("IGameMode", "GameMode", "override", "protected"));
 	mixin(Prop!("CPriorityEvent!()", "DrawEvent", "override", "protected"));
 	mixin(Prop!("CUnorderedEvent!(float)", "LogicEvent", "override", "protected"));
+	mixin(Prop!("CConfigManager", "ConfigManager", "override", "protected"));
+	mixin(Prop!("CBitmapManager", "BitmapManager", "override", "protected"));
 protected:
 	IGameMode GameModeVal;
 
@@ -175,8 +176,8 @@ protected:
 	CCamera Camera;
 	CTileSheet TileSheet;
 	CTileMap TileMap;
-	CSprite Sprite;
+
 	CParticleEmitter Emitter;
-	CConfigManager ConfigManager;
-	CBitmapManager BitmapManager;
+	CConfigManager ConfigManagerVal;
+	CBitmapManager BitmapManagerVal;
 }

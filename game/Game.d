@@ -80,7 +80,7 @@ class CGame : CDisposable, IGame
 exit:{}
 	}
 
-	mixin(Prop!("float", "Time", "override", "protected"));
+	mixin(Prop!("double", "Time", "override", "protected"));
 	mixin(Prop!("CGfx", "Gfx", "override", "protected"));
 	mixin(Prop!("CSfx", "Sfx", "override", "protected"));
 	mixin(Prop!("CConfig", "Options", "override", "protected"));
@@ -132,7 +132,7 @@ protected:
 	}
 
 	ALLEGRO_EVENT_QUEUE* Queue;
-	float TimeVal = 0.0f;
+	double TimeVal = 0.0f;
 	
 	CConfig OptionsVal;
 	CGfx GfxVal;

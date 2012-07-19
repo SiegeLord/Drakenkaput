@@ -24,6 +24,7 @@ class CConfigManager : CResourceManager!(CConfig)
 		}
 	}
 	
+	override
 	CConfig Default()
 	{
 		return DefaultVal;

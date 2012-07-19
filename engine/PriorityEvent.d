@@ -19,7 +19,7 @@ final class CPriorityEvent(TArgs...)
 		}
 	}
 	
-	void Register(TDelegate dg, int priority)
+	void Register(TDelegate dg, int priority = 0)
 	{
 		auto holder = SDelegateHolder(dg, priority);
 		auto where = DelegateHolders.lbound(holder, &SDelegateHolder.Less);

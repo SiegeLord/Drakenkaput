@@ -15,7 +15,7 @@ enum FixedDt = 1.0f/60.0f;
 
 interface IGame
 {
-	float Time();
+	double Time();
 	@property
 	CGfx Gfx();
 	@property
