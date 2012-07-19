@@ -80,6 +80,22 @@ final class CLevel : CDisposable, ILevel
 		LogicEvent.Trigger(dt);
 		
 		Objects.Prune();
+		
+		CPosition pos;
+		if(Player.Get(pos))
+		{
+			Camera.Position = pos.Position;
+		}
+		
+		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
+		SVector2D max_pos = TileMap.PixelSize - Game.Gfx.ScreenSize / 2;
+		max_pos.X = max(max_pos.X, min_pos.X);
+		max_pos.Y = max(max_pos.Y, min_pos.Y);
+		
+		Clamp(Camera.Position.X, min_pos.X, max_pos.X);
+		Clamp(Camera.Position.Y, min_pos.Y, max_pos.Y);
+		Camera.Position.X = floor(Camera.Position.X);
+		Camera.Position.Y = floor(Camera.Position.Y);
 	}
 	
 	void Draw()
@@ -113,20 +129,6 @@ final class CLevel : CDisposable, ILevel
 		
 		if(PlayerController !is null)
 			PlayerController.Input(event);
-		
-		CPosition pos;
-		if(Player.Get(pos))
-			Camera.Position = pos.Position;
-		
-		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
-		SVector2D max_pos = TileMap.PixelSize - Game.Gfx.ScreenSize / 2;
-		max_pos.X = max(max_pos.X, min_pos.X);
-		max_pos.Y = max(max_pos.Y, min_pos.Y);
-		
-		Clamp(Camera.Position.X, min_pos.X, max_pos.X);
-		Clamp(Camera.Position.Y, min_pos.Y, max_pos.Y);
-		Camera.Position.X = floor(Camera.Position.X);
-		Camera.Position.Y = floor(Camera.Position.Y);
 	}
 	
 	override
