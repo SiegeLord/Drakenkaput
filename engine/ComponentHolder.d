@@ -1,5 +1,7 @@
 module engine.ComponentHolder;
 
+import tango.io.Stdout;
+
 interface IComponent
 {
 	void WireUp(CComponentHolder holder);
@@ -25,29 +27,17 @@ class CComponentHolder
 	{
 		Components ~= comp;
 	}
-
-	IComponent GetByInfo(ClassInfo type)
-	{
-		foreach(component; Components)
-		{
-			/* Component a subclass of type */
-			auto base = component.classinfo;
-			while(base !is null)
-			{
-				if(base is type)
-					return component;
-
-				base = base.base;
-			}
-		}
-
-		return null;
-	}
 	
 	@property
-	CompT Get(CompT)()
+	TComp Get(TComp)()
 	{
-		return cast(CompT)GetByInfo(CompT.classinfo);
+		TComp ret;
+		foreach(component; Components)
+		{
+			if((ret = cast(TComp)component) !is null)
+				break;
+		}
+		return ret;
 	}
 protected:
 	IComponent[] Components;

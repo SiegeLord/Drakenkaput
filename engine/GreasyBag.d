@@ -25,13 +25,16 @@ class CGreasyBag(TElem)
 	
 	void Prune()
 	{
-		size_t new_size;
-		if(PreserveOrder)
-			new_size = Holders.removeIf((CElemHolder holder) => holder.RemoveMe);
-		else
-			new_size = Holders.partition((CElemHolder holder) => !holder.RemoveMe);
-		Holders.length = new_size;
-		NumToRemove = 0;
+		if(NumToRemove)
+		{
+			size_t new_size;
+			if(PreserveOrder)
+				new_size = Holders.removeIf((CElemHolder holder) => holder.RemoveMe);
+			else
+				new_size = Holders.partition((CElemHolder holder) => !holder.RemoveMe);
+			Holders.length = new_size;
+			NumToRemove = 0;
+		}
 	}
 	
 	int opApply(scope int delegate(ref TElem elem) dg)

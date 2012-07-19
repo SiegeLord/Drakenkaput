@@ -17,19 +17,19 @@ final class CTileMap
 		Sheet = sheet;
 		
 		auto cfg = config_manager.Load(file);
-		auto tilesheet_name = cfg.Get!(const(char)[])("", "tilesheet");
+		auto tilesheet_name = cfg.Get!(const(char)[])("tilemap", "tilesheet");
 		if(tilesheet_name == "")
 			throw new Exception("'" ~ file.idup ~ "' needs to specify a tilesheet file.");
 
-		Width = max(cfg.Get!(int)("", "width", 1), 1);
-		Height = max(cfg.Get!(int)("", "height", 1), 1);
+		Width = max(cfg.Get!(int)("tilemap", "width", 1), 1);
+		Height = max(cfg.Get!(int)("tilemap", "height", 1), 1);
 		
 		TileMap.length = Width * Height;
 		
 		foreach(y; 0..Height)
 		{
 			auto key_str = Format("row_{}", y);
-			auto row_str = cfg.Get!(const(dchar)[])("", key_str, "");
+			auto row_str = cfg.Get!(const(dchar)[])("tilemap", key_str, "");
 			foreach(x, symbol; row_str)
 			{
 				if(x >= Width)
