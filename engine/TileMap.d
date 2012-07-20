@@ -41,8 +41,8 @@ final class CTileMap
 	
 	void Draw(SVector2D screen_pos, SVector2D screen_size)
 	{		
-		auto tw = Sheet.TileWidth;
-		auto th = Sheet.TileHeight;
+		auto tw = TileWidth;
+		auto th = TileHeight;
 		
 		auto start_x = cast(int)max(0.0f, screen_pos.X / tw);
 		auto start_y = cast(int)max(0.0f, screen_pos.Y / th);
@@ -56,7 +56,7 @@ final class CTileMap
 		{
 			foreach(x; start_x..end_x)
 			{
-				Sheet.DrawTile(TileMap[y * Width + x], x * Sheet.TileWidth, y * Sheet.TileHeight);
+				Sheet.DrawTile(TileMap[y * Width + x], x * TileWidth, y * TileHeight);
 			}
 		}
 		
@@ -67,11 +67,31 @@ final class CTileMap
 	@property
 	SVector2D PixelSize()
 	{
-		return SVector2D(Width * Sheet.TileWidth, Height * Sheet.TileHeight);
+		return SVector2D(Width * TileWidth, Height * TileHeight);
 	}
+	
+	CTileSheet.STile GetTile(int x, int y)
+	{
+		return Sheet.GetTile(TileMap[y * Width + x]);
+	}
+	
+	@property
+	int TileWidth()
+	{
+		return Sheet.TileWidth;
+	}
+	
+	@property
+	int TileHeight()
+	{
+		return Sheet.TileHeight;
+	}
+	
+	mixin(Prop!("int", "Width", "", "protected"));
+	mixin(Prop!("int", "Height", "", "protected"));
 protected:
 	size_t[] TileMap;
 	CTileSheet Sheet;
-	int Width;
-	int Height;
+	int WidthVal;
+	int HeightVal;
 }

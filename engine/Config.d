@@ -12,6 +12,7 @@ import tango.util.Convert;
 import tango.text.convert.Format;
 import tr = tango.core.Traits;
 import tango.text.Util;
+import tango.io.Stdout;
 
 class CConfig : CHolder!(ALLEGRO_CONFIG*, al_destroy_config)
 {

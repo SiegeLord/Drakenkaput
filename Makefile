@@ -1,20 +1,20 @@
-DC               := ldc2
-INSTALL_PREFIX   := /usr/local
-XFBUILD          := $(shell which xfbuild)
-GAME_NAME        := main
-GAME_FILES       := $(wildcard game/*.d game/components/*.d)
-ALLEGRO_VERSION  := 5.0
-ALLEGRO_LD_FLAGS := -L-ldallegro5 $(shell pkg-config --libs allegro_ttf-$(ALLEGRO_VERSION) allegro_acodec-$(ALLEGRO_VERSION) allegro_primitives-$(ALLEGRO_VERSION) allegro_image-$(ALLEGRO_VERSION) | sed -e 's/-[lL]/-L&/g')
-TANGO_LD_FLAGS   := -L-ltango-ldc -L-ldl
-ENGINE_FILES     := $(wildcard engine/*.d)
-ALL_FILES        := $(GAME_FILES) $(ENGINE_FILES)
+DC               = ldc2
+INSTALL_PREFIX   = /usr/local
+XFBUILD          = $(shell which xfbuild)
+GAME_NAME        = main
+GAME_FILES       = $(wildcard game/*.d game/components/*.d)
+ALLEGRO_VERSION  = 5.0
+ALLEGRO_LD_FLAGS = -L-ldallegro5 $(shell pkg-config --libs allegro_ttf-$(ALLEGRO_VERSION) allegro_acodec-$(ALLEGRO_VERSION) allegro_primitives-$(ALLEGRO_VERSION) allegro_image-$(ALLEGRO_VERSION) | sed -e 's/-[lL]/-L&/g')
+TANGO_LD_FLAGS   = -L-ltango-ldc -L-ldl
+ENGINE_FILES     = $(wildcard engine/*.d)
+ALL_FILES        = $(GAME_FILES) $(ENGINE_FILES)
 
-LD_FLAGS         := $(ALLEGRO_LD_FLAGS) $(TANGO_LD_FLAGS)
+LD_FLAGS         = $(ALLEGRO_LD_FLAGS) $(TANGO_LD_FLAGS)
 
 ifeq ($(DC),ldc2)
-    D_FLAGS          := -w -g -unittest -L-L. -d-version=DebugDisposable -d-version=UnitTest
+    D_FLAGS          = -w -g -unittest -d-version=DebugDisposable -d-version=UnitTest
 else
-    D_FLAGS          := -w -g -unittest -L-L. -version=DebugDisposable -version=UnitTest
+    D_FLAGS          = -w -g -unittest -version=DebugDisposable -version=UnitTest
 endif
 
 # Compiles a D program

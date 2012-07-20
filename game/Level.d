@@ -23,6 +23,8 @@ import game.IGame;
 import game.ILevel;
 import game.GameObject;
 import game.ParticleEmitter;
+import game.ICollisionManager;
+import game.CollisionManager;
 
 import game.components.Position;
 import game.components.Controller;
@@ -65,17 +67,24 @@ final class CLevel : CDisposable, ILevel
 		LogicEvent = new typeof(LogicEvent)();
 		Objects = new typeof(Objects)();
 		
+		CollisionManager = new CCollisionManager(TileMap.Width, TileMap.Height, TileMap.TileWidth, TileMap.TileHeight);
+		CollisionManagerVal.UpdateTileMap(TileMap);
+		
 		Player = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
 		auto pos = Player.Get!(CPosition)();
 		pos.X = 100;
 		pos.Y = 100;
 		PlayerController = Player.Get!(CController)();
+		
+		auto obj = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
+		pos = obj.Get!(CPosition)();
+		pos.X = 200;
+		pos.Y = 200;
 	}
 	
 	void Logic(float dt)
 	{
 		Emitter.Logic(dt);
-		Camera.Update(Game.Gfx.ScreenSize);
 		
 		LogicEvent.Trigger(dt);
 		
@@ -83,9 +92,7 @@ final class CLevel : CDisposable, ILevel
 		
 		CPosition pos;
 		if(Player.Get(pos))
-		{
 			Camera.Position = pos.Position;
-		}
 		
 		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
 		SVector2D max_pos = TileMap.PixelSize - Game.Gfx.ScreenSize / 2;
@@ -96,6 +103,8 @@ final class CLevel : CDisposable, ILevel
 		Clamp(Camera.Position.Y, min_pos.Y, max_pos.Y);
 		Camera.Position.X = floor(Camera.Position.X);
 		Camera.Position.Y = floor(Camera.Position.Y);
+		
+		Camera.Update(Game.Gfx.ScreenSize);
 	}
 	
 	void Draw()
@@ -159,6 +168,18 @@ final class CLevel : CDisposable, ILevel
 		return GameMode.Game;
 	}
 	
+	override @property
+	ICollisionManager CollisionManager()
+	{
+		return CollisionManagerVal;
+	}
+	
+	protected @property
+	CCollisionManager CollisionManager(CCollisionManager val)
+	{
+		return CollisionManagerVal = val;
+	}
+	
 	mixin(Prop!("IGameMode", "GameMode", "override", "protected"));
 	mixin(Prop!("CPriorityEvent!()", "DrawEvent", "override", "protected"));
 	mixin(Prop!("CUnorderedEvent!(float)", "LogicEvent", "override", "protected"));
@@ -187,4 +208,5 @@ protected:
 	CParticleEmitter Emitter;
 	CConfigManager ConfigManagerVal;
 	CBitmapManager BitmapManagerVal;
+	CCollisionManager CollisionManagerVal;
 }

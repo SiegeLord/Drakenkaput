@@ -1,5 +1,7 @@
 module engine.Util;
 
+import tango.math.Math;
+
 const(char)[] Prop(const(char)[] type, const(char)[] name, const(char)[] get_attr = "", const(char)[] set_attr = "")()
 {
 	return
@@ -33,4 +35,12 @@ void Clamp(T)(ref T val, T min_val, T max_val)
 		val = max_val;
 	else if(val < min_val)
 		val = min_val;
+}
+
+T RoundTowards(T)(T val, T to)
+{
+	if(to > val)
+		return ceil(val);
+	else
+		return floor(val);
 }

@@ -1,14 +1,15 @@
 module game.ILevel;
 
-import game.IGame;
-import game.IGameMode;
-import game.GameObject;
-
 import engine.PriorityEvent;
 import engine.UnorderedEvent;
 import engine.GreasyBag;
 import engine.BitmapManager;
 import engine.ConfigManager;
+
+import game.IGame;
+import game.IGameMode;
+import game.GameObject;
+import game.ICollisionManager;
 
 alias CGreasyBag!(CGameObject).CElemHolder TObjHolder;
 
@@ -34,4 +35,7 @@ interface ILevel
 	
 	@property
 	CConfigManager ConfigManager();
+	
+	@property
+	ICollisionManager CollisionManager();
 }

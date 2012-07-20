@@ -41,6 +41,7 @@ final class CTileSheet
 			auto symbol_str = cfg.Get!(const(dchar)[])(section_name, "symbol", "");
 			if(symbol_str.length > 0)
 				SymbolMap[symbol_str[0]] = idx;
+			tile.Solid = cfg.Get!(bool)(section_name, "solid", false);
 		}
 	}
 	
@@ -48,6 +49,7 @@ final class CTileSheet
 	{
 		float X;
 		float Y;
+		bool Solid = false;
 	}
 	
 	void DrawTile(size_t idx, float x, float y)
