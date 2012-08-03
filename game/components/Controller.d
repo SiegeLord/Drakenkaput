@@ -24,6 +24,8 @@ import engine.ComponentHolder;
 
 import game.GameObject;
 import game.components.Velocity;
+import game.components.Direction;
+import game.components.Moving;
 
 import allegro5.allegro;
 
@@ -41,6 +43,8 @@ class CController : CGameComponent
 	void WireUp(CComponentHolder holder)
 	{
 		RequireComponent(Velocity, holder, this);
+		GetComponent(Direction, holder, this);
+		GetComponent(Moving, holder, this);
 	}
 	
 	void Input(ALLEGRO_EVENT* event)
@@ -96,22 +100,59 @@ class CController : CGameComponent
 			default:
 		}
 		
+		void set_dir(EDirection dir)
+		{
+			if(Direction !is null)
+				Direction = dir;
+		}
+		
+		void set_move(bool moving)
+		{
+			if(Moving !is null)
+			{
+				Moving = moving;
+			}
+		}
+		
+		bool no_x = false;
+		set_move(true);
+		
 		if((Left && !Right) || (Left && Right && LastLeft))
+		{
 			Velocity.X = -mag;
+			set_dir(EDirection.Left);
+		}
 		else if((Right && !Left) || (Left && Right && !LastLeft))
+		{
 			Velocity.X = mag;
+			set_dir(EDirection.Right);
+		}
 		else
+		{
 			Velocity.X = 0;
+			no_x = true;
+		}
 			
 		if((Up && !Down) || (Up && Down && LastUp))
+		{
 			Velocity.Y = -mag;
+			set_dir(EDirection.Up);
+		}
 		else if((Down && !Up) || (Up && Down && !LastUp))
+		{
 			Velocity.Y = mag;
+			set_dir(EDirection.Down);
+		}
 		else
+		{
 			Velocity.Y = 0;
+			set_move(!no_x);
+		}
 	}
 protected:
 	CVelocity Velocity;
+	CDirection Direction;
+	CMoving Moving;
 	bool Left, Right, Up, Down;
 	bool LastLeft, LastUp;
 }

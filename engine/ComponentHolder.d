@@ -78,3 +78,8 @@ void RequireComponent(TThis, TComp)(ref TComp component, CComponentHolder holder
 	if(component is null)
 		throw new Exception("'" ~ ComponentName!(TThis) ~ "' component requires a '" ~ ComponentName!(TComp) ~ "' component.");
 }
+
+void GetComponent(TThis, TComp)(ref TComp component, CComponentHolder holder, TThis this_obj)
+{
+	component = holder.Get!(TComp);
+}

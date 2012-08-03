@@ -26,6 +26,10 @@ import engine.ComponentHolder;
 import game.GameObject;
 
 import game.components.Position;
+import game.components.Direction;
+import game.components.Moving;
+
+import tango.io.Stdout;
  
 class CSimpleAnimation : CGameComponent
 {
@@ -33,6 +37,8 @@ class CSimpleAnimation : CGameComponent
 	void WireUp(CComponentHolder holder)
 	{
 		RequireComponent(Position, holder, this);
+		GetComponent(Direction, holder, this);
+		GetComponent(Moving, holder, this);
 	}
 	
 	override
@@ -40,10 +46,32 @@ class CSimpleAnimation : CGameComponent
 	{
 		game_obj.Level.DrawEvent.Register(&Draw);
 		
-		auto sprite_file = config.Get!(const(char)[])(ComponentName!(typeof(this)), "sprite", "");
-		if(sprite_file == "")
-			throw new Exception("'" ~ ComponentName!(typeof(this)) ~ "' needs a sprite file.");
-		Sprite = new CSprite(sprite_file, game_obj.Level.ConfigManager, game_obj.Level.BitmapManager);
+		if(Direction !is null)
+		{
+			void load_type(ref CSprite[EDirection.NumDirections] sprites, const(char)[] suffix)
+			{
+				foreach(dir; 0..EDirection.NumDirections)
+				{
+					auto sprite_str = suffix ~ "_" ~ DirectionToString(cast(EDirection)dir);
+					auto sprite_file = config.Get!(const(char)[])(ComponentName!(typeof(this)), sprite_str, "");
+					if(sprite_file == "")
+						throw new Exception(config.Filename.idup ~ ":" ~ ComponentName!(typeof(this)).idup ~ "needs " ~ sprite_str.idup);
+					sprites[dir] = new CSprite(sprite_file, game_obj.Level.ConfigManager, game_obj.Level.BitmapManager);
+				}
+			}
+			
+			load_type(StandSprites, "stand");
+			load_type(WalkSprites, "walk");
+		}
+		else
+		{
+			auto sprite_file = config.Get!(const(char)[])(ComponentName!(typeof(this)), "sprite", "");
+			if(sprite_file == "")
+				throw new Exception("'" ~ ComponentName!(typeof(this)) ~ "' needs a sprite file.");
+			StandSprites[0] = new CSprite(sprite_file, game_obj.Level.ConfigManager, game_obj.Level.BitmapManager);
+		}
+		
+		
 		Time = &game_obj.Level.Game.Time;
 	}
 	
@@ -55,10 +83,43 @@ class CSimpleAnimation : CGameComponent
 	
 	void Draw()
 	{
-		Sprite.Draw(Time(), Position.X, Position.Y);
+		CSprite sprite;
+		if(Direction is null)
+		{
+			sprite = StandSprites[0];
+		}
+		else
+		{
+			if(Moving !is null)
+			{
+				if(Moving.Moving)
+				{
+					sprite = WalkSprites[Direction.Direction];
+				}
+				else
+				{
+					sprite = StandSprites[Direction.Direction];
+				}
+			}
+			else
+			{
+				sprite = StandSprites[Direction.Direction];
+			}
+		}
+		
+		sprite.Draw(Time(), Position.X, Position.Y);
 	}
 protected:
 	double delegate() Time;
-	CSprite Sprite;
+	
+	CSprite[EDirection.NumDirections] StandSprites;
+	CSprite[EDirection.NumDirections] WalkSprites;
+	CSprite[EDirection.NumDirections] AttackSprites;
+	
+	CSprite CurSprite;
+	
+	
 	CPosition Position;
+	CDirection Direction;
+	CMoving Moving;
 }

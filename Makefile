@@ -1,11 +1,27 @@
 DC               = ldc2
+STATIC           = 0
+
+ifeq ($(DC),ldc2)
+    DC_NAME = ldc
+else
+    DC_NAME = $(DC)
+endif
+
+ifeq ($(STATIC),1)
+    STATIC_SUFFIX = -static
+    STATIC_PKG_CONFIG = --static
+else
+    STATIC_SUFFIX = 
+    STATIC_PKG_CONFIG = 
+endif
+
 INSTALL_PREFIX   = /usr/local
 XFBUILD          = $(shell which xfbuild)
 GAME_NAME        = main
 GAME_FILES       = $(wildcard game/*.d game/components/*.d)
-ALLEGRO_VERSION  = 5.0
-ALLEGRO_LD_FLAGS = -L-ldallegro5 $(shell pkg-config --libs allegro_ttf-$(ALLEGRO_VERSION) allegro_acodec-$(ALLEGRO_VERSION) allegro_primitives-$(ALLEGRO_VERSION) allegro_image-$(ALLEGRO_VERSION) | sed -e 's/-[lL]/-L&/g')
-TANGO_LD_FLAGS   = -L-ltango-ldc -L-ldl
+ALLEGRO_VERSION  = 5.1
+ALLEGRO_LD_FLAGS = -L-ldallegro5 $(shell pkg-config $(STATIC_PKG_CONFIG) --libs allegro_ttf$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) allegro_acodec$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) allegro_primitives$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) allegro_image$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) | sed -e 's/-[lL]/-L&/g')
+TANGO_LD_FLAGS   = -L-ltango-${DC_NAME} -L-ldl
 ENGINE_FILES     = $(wildcard engine/*.d)
 ALL_FILES        = $(GAME_FILES) $(ENGINE_FILES)
 
@@ -26,7 +42,7 @@ ifeq ($(XFBUILD),)
     endef
 else
     define d_build
-        @$(XFBUILD) +D=".deps_$1" +O=".objs_$1" +threads=6 +o$1 +c$(DC) +x$(DC) +xldc +xtango +xstd +xcore +xallegro5 $2 $(D_FLAGS) $(LD_FLAGS)
+        @$(XFBUILD) +D=".deps_$1" +O=".objs_$1" +threads=6 +o$1 +c$(DC) +x$(DC) +x${DC_NAME} +xtango +xstd +xcore +xallegro5 $2 $(D_FLAGS) $(LD_FLAGS)
         @rm -f *.rsp
     endef
 endif
