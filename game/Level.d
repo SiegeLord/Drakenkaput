@@ -50,6 +50,7 @@ import game.components.Controller;
 
 import tango.math.Math;
 import tango.io.Stdout;
+import tango.text.convert.Format;
 
 import allegro5.allegro;
 import allegro5.allegro_font;
@@ -77,8 +78,9 @@ final class CLevel : CDisposable, ILevel
 		Emitter.Position = Game.Gfx.ScreenSize / 2;
 		Emitter.Theta = -ALLEGRO_PI / 2;
 		
-		TileSheet = new CTileSheet("data/tilesheets/test.cfg", ConfigManager, BitmapManager);
-		TileMap = new CTileMap("data/maps/test.cfg", TileSheet, ConfigManager);
+		TileMap = new CTileMap(file, ConfigManager, BitmapManager);
+		
+		auto cfg = ConfigManager.Load(file);
 		
 		Camera = new CCamera(Game.Gfx.ScreenSize / 2);
 		
@@ -90,15 +92,39 @@ final class CLevel : CDisposable, ILevel
 		CollisionManagerVal.UpdateTileMap(TileMap);
 		
 		Player = new CGameObject("data/objects/player.cfg", this, ConfigManager);
-		auto pos = Player.Get!(CPosition)();
-		pos.X = 100;
-		pos.Y = 100;
+		auto pos_comp = Player.Get!(CPosition)();
+		pos_comp.X = 100;
+		pos_comp.Y = 100;
 		PlayerController = Player.Get!(CController)();
 		
-		auto obj = new CGameObject("data/objects/gundude.cfg", this, ConfigManager);
-		pos = obj.Get!(CPosition)();
-		pos.X = 200;
-		pos.Y = 200;
+		int n = 0;
+		while(true)
+		{
+			auto section = Format("enemy_{}", n);
+			auto enemy_name = cfg.Get!(const(char)[])(section, "name", "");
+			if(enemy_name == "")
+				break;
+			
+			int m = 0;
+			while(true)
+			{
+				auto pos_str = Format("pos_{}", m);
+				auto pos = cfg.Get!(SVector2D)(section, pos_str, SVector2D(-1, -1));
+				if(pos.X < 0)
+					break;
+				pos.X *= TileMap.TileWidth;
+				pos.Y *= TileMap.TileHeight;
+				
+				auto obj = new CGameObject(enemy_name, this, ConfigManager);
+				assert(obj);
+				pos_comp = obj.Get!(CPosition)();
+				pos_comp = pos;
+				
+				m++;
+			}
+			
+			n++;
+		}
 	}
 	
 	void Logic(float dt)
@@ -258,7 +284,6 @@ protected:
 	CUnorderedEvent!(float) LogicEventVal;
 	
 	CCamera Camera;
-	CTileSheet TileSheet;
 	CTileMap TileMap;
 
 	CParticleEmitter Emitter;

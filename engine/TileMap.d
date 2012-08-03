@@ -19,6 +19,7 @@ along with TINSEngine.  If not, see <http://www.gnu.org/licenses/>.
 module engine.TileMap;
 
 import engine.ConfigManager;
+import engine.BitmapManager;
 import engine.Util;
 import engine.TileSheet;
 import engine.MathTypes;
@@ -30,14 +31,14 @@ import allegro5.allegro;
 
 final class CTileMap
 {
-	this(const(char)[] file, CTileSheet sheet, CConfigManager config_manager)
+	this(const(char)[] file, CConfigManager config_manager, CBitmapManager bitmap_manager)
 	{
-		Sheet = sheet;
-		
 		auto cfg = config_manager.Load(file);
 		auto tilesheet_name = cfg.Get!(const(char)[])("tilemap", "tilesheet");
 		if(tilesheet_name == "")
 			throw new Exception("'" ~ file.idup ~ "' needs to specify a tilesheet file.");
+		
+		Sheet = new CTileSheet(tilesheet_name, config_manager, bitmap_manager);
 
 		Width = max(cfg.Get!(int)("tilemap", "width", 1), 1);
 		Height = max(cfg.Get!(int)("tilemap", "height", 1), 1);
