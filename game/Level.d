@@ -88,13 +88,13 @@ final class CLevel : CDisposable, ILevel
 		CollisionManager = new CCollisionManager(TileMap.Width, TileMap.Height, TileMap.TileWidth, TileMap.TileHeight);
 		CollisionManagerVal.UpdateTileMap(TileMap);
 		
-		Player = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
+		Player = new CGameObject("data/objects/player.cfg", this, ConfigManager);
 		auto pos = Player.Get!(CPosition)();
 		pos.X = 100;
 		pos.Y = 100;
 		PlayerController = Player.Get!(CController)();
 		
-		auto obj = new CGameObject("data/objects/obj.cfg", this, ConfigManager);
+		auto obj = new CGameObject("data/objects/gundude.cfg", this, ConfigManager);
 		pos = obj.Get!(CPosition)();
 		pos.X = 200;
 		pos.Y = 200;
@@ -203,6 +203,7 @@ final class CLevel : CDisposable, ILevel
 	mixin(Prop!("CUnorderedEvent!(float)", "LogicEvent", "override", "protected"));
 	mixin(Prop!("CConfigManager", "ConfigManager", "override", "protected"));
 	mixin(Prop!("CBitmapManager", "BitmapManager", "override", "protected"));
+	mixin(Prop!("CGameObject", "Player", "override", "protected"));
 protected:
 	IGameMode GameModeVal;
 
@@ -212,7 +213,7 @@ protected:
 	CSoundManager SoundManager;
 	CSound UISound;
 	
-	CGameObject Player;
+	CGameObject PlayerVal;
 	CController PlayerController;
 	
 	CGreasyBag!(CGameObject) Objects;

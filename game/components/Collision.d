@@ -57,6 +57,12 @@ class CCollision : CGameComponent
 		return SRect(CollisionRect.Min + Position.Position, CollisionRect.Max + Position.Position);
 	}
 	
+	@property
+	SVector2D WorldCenter()
+	{
+		return (CollisionRect.Min + CollisionRect.Max) / 2 + Position.Position;
+	}
+	
 	mixin(Prop!("SRect", "CollisionRect", "", "protected"));
 protected:
 	CPosition Position;

@@ -56,4 +56,7 @@ interface ILevel
 	
 	@property
 	ICollisionManager CollisionManager();
+	
+	@property
+	CGameObject Player();
 }

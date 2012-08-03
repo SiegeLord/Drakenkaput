@@ -26,6 +26,7 @@ import engine.ComponentHolder;
 import game.GameObject;
 
 import game.components.IWeapon;
+import game.components.Direction;
 
 import tango.io.Stdout;
  
@@ -44,6 +45,11 @@ class CSword : CGameComponent, IWeapon
 		RangeVal = config.Get!(float)("Sword", "range", 32);
 		
 		Time = &game_obj.Level.Game.Time;
+		
+		foreach(ii; 0..EDirection.NumDirections)
+		{
+			Offsets[ii] = config.Get!(SVector2D)(ComponentName!(typeof(this)), "offset_" ~ DirectionToString(cast(EDirection)ii));
+		}
 	}
 	
 	override
@@ -66,7 +72,14 @@ class CSword : CGameComponent, IWeapon
 	{
 		return Time() < NextGoodTime;
 	}
+	
+	SVector2D GetOffset(EDirection dir)
+	{
+		return Offsets[dir];
+	}
 protected:
+	SVector2D[EDirection.NumDirections] Offsets;
+
 	double delegate() Time;
 	float NextGoodTime = -float.infinity;
 	float Duration = 0.1;

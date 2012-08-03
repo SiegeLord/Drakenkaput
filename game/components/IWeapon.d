@@ -18,6 +18,9 @@ along with TINSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
 module game.components.IWeapon;
 
+import engine.MathTypes;
+import game.components.Direction;
+
 interface IWeapon
 {
 	@property
@@ -27,4 +30,6 @@ interface IWeapon
 	
 	@property
 	bool Visible();
+	
+	SVector2D GetOffset(EDirection dir);
 }
