@@ -28,7 +28,7 @@ import game.GameObject;
 import game.components.Position;
 import game.components.Direction;
 import game.components.Moving;
-import game.components.Attacking;
+import game.components.IWeapon;
 
 import tango.io.Stdout;
  
@@ -40,7 +40,7 @@ class CSimpleAnimation : CGameComponent
 		RequireComponent(Position, holder, this);
 		GetComponent(Direction, holder, this);
 		GetComponent(Moving, holder, this);
-		GetComponent(Attacking, holder, this);
+		GetComponent(Weapon, holder, this);
 	}
 	
 	override
@@ -65,7 +65,7 @@ class CSimpleAnimation : CGameComponent
 			load_type(StandSprites, "stand");
 			if(Moving !is null)
 				load_type(WalkSprites, "walk");
-			if(Attacking !is null)
+			if(Weapon !is null)
 				load_type(AttackSprites, "attack");
 		}
 		else
@@ -104,7 +104,7 @@ class CSimpleAnimation : CGameComponent
 				sprite = StandSprites[Direction.Direction];
 			}
 			
-			if(Attacking !is null && Attacking.Attacking)
+			if(Weapon !is null && Weapon.Visible)
 			{
 				sprite = AttackSprites[Direction.Direction];
 			}
@@ -125,5 +125,5 @@ protected:
 	CPosition Position;
 	CDirection Direction;
 	CMoving Moving;
-	CAttacking Attacking;
+	IWeapon Weapon;
 }
