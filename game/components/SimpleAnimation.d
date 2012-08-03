@@ -28,6 +28,7 @@ import game.GameObject;
 import game.components.Position;
 import game.components.Direction;
 import game.components.Moving;
+import game.components.Attacking;
 
 import tango.io.Stdout;
  
@@ -39,6 +40,7 @@ class CSimpleAnimation : CGameComponent
 		RequireComponent(Position, holder, this);
 		GetComponent(Direction, holder, this);
 		GetComponent(Moving, holder, this);
+		GetComponent(Attacking, holder, this);
 	}
 	
 	override
@@ -61,7 +63,10 @@ class CSimpleAnimation : CGameComponent
 			}
 			
 			load_type(StandSprites, "stand");
-			load_type(WalkSprites, "walk");
+			if(Moving !is null)
+				load_type(WalkSprites, "walk");
+			if(Attacking !is null)
+				load_type(AttackSprites, "attack");
 		}
 		else
 		{
@@ -90,20 +95,18 @@ class CSimpleAnimation : CGameComponent
 		}
 		else
 		{
-			if(Moving !is null)
+			if(Moving !is null && Moving.Moving)
 			{
-				if(Moving.Moving)
-				{
-					sprite = WalkSprites[Direction.Direction];
-				}
-				else
-				{
-					sprite = StandSprites[Direction.Direction];
-				}
+				sprite = WalkSprites[Direction.Direction];
 			}
 			else
 			{
 				sprite = StandSprites[Direction.Direction];
+			}
+			
+			if(Attacking !is null && Attacking.Attacking)
+			{
+				sprite = AttackSprites[Direction.Direction];
 			}
 		}
 		
@@ -122,4 +125,5 @@ protected:
 	CPosition Position;
 	CDirection Direction;
 	CMoving Moving;
+	CAttacking Attacking;
 }

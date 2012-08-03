@@ -26,6 +26,7 @@ import game.GameObject;
 import game.components.Velocity;
 import game.components.Direction;
 import game.components.Moving;
+import game.components.Attacking;
 
 import allegro5.allegro;
 
@@ -45,6 +46,7 @@ class CController : CGameComponent
 		RequireComponent(Velocity, holder, this);
 		GetComponent(Direction, holder, this);
 		GetComponent(Moving, holder, this);
+		GetComponent(Attacking, holder, this);
 	}
 	
 	void Input(ALLEGRO_EVENT* event)
@@ -73,6 +75,9 @@ class CController : CGameComponent
 						Right = true;
 						LastLeft = false;
 						break;
+					case ALLEGRO_KEY_SPACE:
+						Attacking = true;
+						break;
 					default:
 				}
 				break;
@@ -92,6 +97,9 @@ class CController : CGameComponent
 						break;
 					case ALLEGRO_KEY_RIGHT:
 						Right = false;
+						break;
+					case ALLEGRO_KEY_SPACE:
+						Attacking = false;
 						break;
 					default:
 				}
@@ -153,6 +161,7 @@ protected:
 	CVelocity Velocity;
 	CDirection Direction;
 	CMoving Moving;
+	CAttacking Attacking;
 	bool Left, Right, Up, Down;
 	bool LastLeft, LastUp;
 }

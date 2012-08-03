@@ -41,7 +41,7 @@ class CMainMenuMode : CMode
 		FontManager = new CFontManager;
 		Font = FontManager.Load("data/fonts/Energon.ttf", 24);
 		TitleFont = FontManager.Load("data/fonts/Energon.ttf", 48);
-		Game.Sfx.PlayMusic("data/music/medium.xm");
+		//Game.Sfx.PlayMusic("data/music/medium.xm");
 		
 		SoundManager = new CSoundManager;
 		UISound = SoundManager.Load("data/sounds/gui.ogg");

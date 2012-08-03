@@ -22,6 +22,7 @@ import engine.Bitmap;
 import engine.BitmapManager;
 import engine.ConfigManager;
 import engine.Util;
+import engine.MathTypes;
 
 import tango.io.Path;
 import tango.math.Math;
@@ -32,16 +33,18 @@ final class CSprite
 {
 	this(const(char)[] file, CConfigManager config_manager, CBitmapManager bmp_manager)
 	{
-		auto ext = parse(file).ext();
+		auto parser = parse(file);
+		auto ext = parser.ext();
 		if(ext == "cfg")
 		{
 			auto cfg = config_manager.Load(file);
 			auto bmp_name = cfg.Get!(const(char)[])("", "bitmap");
 			if(bmp_name == "")
-				throw new Exception("'" ~ file.idup ~ "' needs to specify a bitmap file.");
+				bmp_name = parser.folder() ~ parser.name() ~ ".png";
 
 			auto bmp = bmp_manager.Load(bmp_name);
 			this(bmp, cfg.Get!(int)("", "width", bmp.Width), cfg.Get!(int)("", "height", bmp.Height), cfg.Get!(float)("", "fps", 0));
+			Offset = cfg.Get!(SVector2D)("", "offset");
 		}
 		else
 		{
@@ -80,17 +83,17 @@ final class CSprite
 	
 	void Draw(float time, float cx, float cy, float dx, float dy, float theta)
 	{
-		Draw(time, cx, cy, dx, dy, theta, al_map_rgb_f(1, 1, 1));
+		Draw(time, cx, cy, dx - Offset.X, dy - Offset.Y, theta, al_map_rgb_f(1, 1, 1));
 	}
 	
 	void Draw(float time, float dx, float dy)
 	{
-		Draw(time, 0.0, 0.0, dx, dy, 0.0, al_map_rgb_f(1, 1, 1));
+		Draw(time, 0.0, 0.0, dx - Offset.X, dy - Offset.Y, 0.0, al_map_rgb_f(1, 1, 1));
 	}
 	
 	void Draw(float time, float dx, float dy, ALLEGRO_COLOR color)
 	{
-		Draw(time, 0.0, 0.0, dx, dy, 0.0, color);
+		Draw(time, 0.0, 0.0, dx - Offset.X, dy - Offset.Y, 0.0, color);
 	}
 	
 	mixin(Prop!("int", "Width", "", "protected"));
@@ -105,4 +108,5 @@ protected:
 	
 	float FPS = 0;
 	CBitmap Bitmap;
+	SVector2D Offset;
 }
