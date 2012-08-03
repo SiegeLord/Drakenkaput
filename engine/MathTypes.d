@@ -146,6 +146,12 @@ struct SRect
 	SVector2D Min;
 	SVector2D Max;
 	
+	void Offset(SVector2D offset)
+	{
+		Min += offset;
+		Max += offset;
+	}
+	
 	void Set(SVector2D top_left, SVector2D bottom_right)
 	{
 		Min = top_left;

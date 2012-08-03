@@ -16,49 +16,57 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with TINSEngine.  If not, see <http://www.gnu.org/licenses/>.
 */
-module game.components.PlayerAnimation;
+module game.components.Destroyable;
 
 import engine.MathTypes;
 import engine.Config;
-import engine.Sprite;
+import engine.Util;
 import engine.ComponentHolder;
 
 import game.GameObject;
 
-import game.components.Position;
+import tango.io.Stdout;
  
-class CPlayerAnimation : CGameComponent
+class CDestroyable : CGameComponent
 {
-	override
-	void WireUp(CComponentHolder holder)
-	{
-		RequireComponent(Position, holder, this);
-	}
-	
 	override
 	void Load(CGameObject game_obj, CConfig config)
 	{
-		game_obj.Level.DrawEvent.Register(&Draw);
+		MaxHealth = config.Get!(float)(ComponentName!(typeof(this)), "health", 10);
+		Health = MaxHealth;
+		ImmuneDuration = config.Get!(float)(ComponentName!(typeof(this)), "immune_dur", 0.5);
+		DamageType = config.Get!(const(char)[])(ComponentName!(typeof(this)), "damage_type", "");
 		
-		auto sprite_file = config.Get!(const(char)[])(ComponentName!(typeof(this)), "sprite", "");
-		if(sprite_file == "")
-			throw new Exception("'" ~ ComponentName!(typeof(this)) ~ "' needs a sprite file.");
-		Sprite = new CSprite(sprite_file, game_obj.Level.ConfigManager, game_obj.Level.BitmapManager);
 		Time = &game_obj.Level.Game.Time;
+		GameObject = game_obj;
 	}
 	
-	override
-	void Unload(CGameObject game_obj)
+	void Damage(const(char)[] type, float ammount)
 	{
-		game_obj.Level.DrawEvent.UnRegister(&Draw);
+		if(!Immune() && type == DamageType)
+		{
+			Health = Health - ammount;
+			if(ammount > 0)
+				ImmuneUntil = Time() + ImmuneDuration;
+			
+			Clamp(HealthVal, 0.0f, MaxHealth);
+			if(Health == 0)
+				GameObject.Remove();
+		}
 	}
 	
-	void Draw()
+	bool Immune()
 	{
-		Sprite.Draw(Time(), Position.X, Position.Y);
+		return Time() < ImmuneUntil;
 	}
+	
+	mixin(Prop!("float", "Health", "", "protected"));
 protected:
+	CGameObject GameObject;
 	double delegate() Time;
-	CSprite Sprite;
-	CPosition Position;
+	float HealthVal;
+	float MaxHealth;
+	float ImmuneDuration;
+	float ImmuneUntil = -float.infinity;
+	const(char)[] DamageType;
 }

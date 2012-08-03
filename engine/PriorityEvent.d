@@ -19,6 +19,7 @@ along with TINSEngine.  If not, see <http://www.gnu.org/licenses/>.
 module engine.PriorityEvent;
 
 import tango.core.Array;
+import tango.io.Stdout;
 
 final class CPriorityEvent(TArgs...)
 {
@@ -43,8 +44,8 @@ final class CPriorityEvent(TArgs...)
 		auto where = DelegateHolders.lbound(holder, &SDelegateHolder.Less);
 		DelegateHolders.length = DelegateHolders.length + 1;
 		
-		foreach(ii; where..DelegateHolders.length - 1)
-			DelegateHolders[ii + 1] = DelegateHolders[ii];
+		for(size_t ii = DelegateHolders.length - 1; ii > where; ii--)
+			DelegateHolders[ii] = DelegateHolders[ii - 1];
 		
 		DelegateHolders[where] = holder;
 	}
@@ -60,7 +61,11 @@ final class CPriorityEvent(TArgs...)
 		foreach(holder; DelegateHolders)
 			holder.Delegate(TArgs);
 	}
-	
+	@property
+	size_t length()
+	{
+		return DelegateHolders.length;
+	}
 protected:
 	SDelegateHolder[] DelegateHolders;
 } 
@@ -84,5 +89,41 @@ version(UnitTest)
 		event.UnRegister(dg);
 		event.Trigger();
 		assert(call_stack == [1, 3], Format("{}", call_stack));
+		
+		call_stack.length = 0;
+		
+		event = new CPriorityEvent!();
+		
+		class A
+		{
+			void test1()
+			{
+				call_stack ~= 1;
+			}
+			
+			void test2()
+			{
+				call_stack ~= 2;
+			}
+		}
+		
+		class B
+		{
+			void test3()
+			{
+				call_stack ~= 3;
+			}
+		}
+		
+		auto a = new A;
+		auto b = new B;
+		
+		event.Register(&a.test1, 2);
+		event.Register(&a.test2, 1);
+		event.Register(&b.test3, 3);
+		
+		event.Trigger();
+		
+		assert(call_stack == [2, 1, 3], Format("{}", call_stack));
 	}
 }

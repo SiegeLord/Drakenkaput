@@ -23,6 +23,7 @@ import engine.UnorderedEvent;
 import engine.GreasyBag;
 import engine.BitmapManager;
 import engine.ConfigManager;
+import engine.MathTypes;
 
 import game.IGame;
 import game.IGameMode;
@@ -59,4 +60,8 @@ interface ILevel
 	
 	@property
 	CGameObject Player();
+	
+	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage);
+	
+	void EnemyDead();
 }

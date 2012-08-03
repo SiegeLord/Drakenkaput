@@ -75,7 +75,7 @@ class CController : CGameComponent
 						Right = true;
 						LastLeft = false;
 						break;
-					case ALLEGRO_KEY_SPACE:
+					case ALLEGRO_KEY_LCTRL:
 						if(Weapon !is null)
 							Weapon.Fire();
 						break;

@@ -244,8 +244,9 @@ final class CCollisionManager : ICollisionManager
 	{
 		Collisions.RemoveLater(holder);
 	}
-protected:
+	
 	CGreasyBag!(CCollision) Collisions;
+protected:
 
 	SRect BoundsRect;
 	int Width;

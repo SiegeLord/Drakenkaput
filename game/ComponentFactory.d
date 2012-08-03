@@ -52,4 +52,5 @@ const(char)[] FactorySource(const(char)[][] components...)
 	return ret;
 }
 
-mixin(FactorySource("Position", "SimpleAnimation", "Velocity", "Controller", "Collision", "PlayerAnimation", "Direction", "Moving", "Attacking", "Sword", "AIController"));
+mixin(FactorySource("Position", "SimpleAnimation", "Velocity", "Controller", "Collision", "Direction", "Moving", "Attacking", "Sword", "AIController",
+"Destroyable", "Enemy"));

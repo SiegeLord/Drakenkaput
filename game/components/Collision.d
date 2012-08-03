@@ -43,6 +43,7 @@ class CCollision : CGameComponent
 		CollisionRect = SRect(config.Get!(SVector2D)(ComponentName!(typeof(this)), "top_left", SVector2D(0, 0)),
 		                      config.Get!(SVector2D)(ComponentName!(typeof(this)), "bottom_right", SVector2D(0, 0)));
 		Holder = game_obj.Level.CollisionManager.AddCollision(this);
+		GameObject = game_obj;
 	}
 	
 	override
@@ -64,6 +65,7 @@ class CCollision : CGameComponent
 	}
 	
 	mixin(Prop!("SRect", "CollisionRect", "", "protected"));
+	CGameObject GameObject;
 protected:
 	CPosition Position;
 	SRect CollisionRectVal;

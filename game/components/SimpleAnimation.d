@@ -29,8 +29,10 @@ import game.components.Position;
 import game.components.Direction;
 import game.components.Moving;
 import game.components.IWeapon;
+import game.components.Destroyable;
 
 import tango.io.Stdout;
+import allegro5.allegro;
  
 class CSimpleAnimation : CGameComponent
 {
@@ -41,12 +43,13 @@ class CSimpleAnimation : CGameComponent
 		GetComponent(Direction, holder, this);
 		GetComponent(Moving, holder, this);
 		GetComponent(Weapon, holder, this);
+		GetComponent(Destroyable, holder, this);
 	}
 	
 	override
 	void Load(CGameObject game_obj, CConfig config)
 	{
-		game_obj.Level.DrawEvent.Register(&Draw);
+		game_obj.Level.DrawEvent.Register(&Draw, 1);
 		
 		if(Direction !is null)
 		{
@@ -110,7 +113,8 @@ class CSimpleAnimation : CGameComponent
 			}
 		}
 		
-		sprite.Draw(Time(), Position.X, Position.Y);
+		if(Destroyable !is null && (!Destroyable.Immune() || (Time() / 0.05) % 2 == 0))
+			sprite.Draw(Time(), Position.X, Position.Y);
 	}
 protected:
 	double delegate() Time;
@@ -126,4 +130,5 @@ protected:
 	CDirection Direction;
 	CMoving Moving;
 	IWeapon Weapon;
+	CDestroyable Destroyable;
 }

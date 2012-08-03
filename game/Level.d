@@ -44,6 +44,7 @@ import game.ParticleEmitter;
 import game.ICollisionManager;
 import game.CollisionManager;
 
+import game.components.Destroyable;
 import game.components.Position;
 import game.components.Controller;
 
@@ -109,7 +110,7 @@ final class CLevel : CDisposable, ILevel
 		Objects.Prune();
 		
 		CPosition pos;
-		if(Player.Get(pos))
+		if(Player && Player.Get(pos))
 			Camera.Position = pos.Position;
 		
 		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
@@ -123,6 +124,9 @@ final class CLevel : CDisposable, ILevel
 		Camera.Position.Y = floor(Camera.Position.Y);
 		
 		Camera.Update(Game.Gfx.ScreenSize);
+		
+		if(Game.Time() > TimeOutTime)
+			EnemyCounter = 0;
 	}
 	
 	void Draw()
@@ -134,6 +138,11 @@ final class CLevel : CDisposable, ILevel
 		Emitter.Draw();
 		
 		DrawEvent.Trigger();
+		
+		GameMode.Game.Gfx.ResetTransform();
+		
+		if(EnemyCounter > 0)
+			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), 20, 20, 0, "Combo: %d", EnemyCounter); 
 	}
 	
 	void Input(ALLEGRO_EVENT* event)
@@ -178,6 +187,11 @@ final class CLevel : CDisposable, ILevel
 	void RemoveObject(CGameObject obj, TObjHolder holder)
 	{
 		Objects.RemoveLater(holder);
+		if(obj == Player)
+		{
+			Player = null;
+			PlayerController = null;
+		}
 	}
 	
 	override @property
@@ -198,6 +212,27 @@ final class CLevel : CDisposable, ILevel
 		return CollisionManagerVal = val;
 	}
 	
+	override
+	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage)
+	{
+		foreach(col; CollisionManagerVal.Collisions)
+		{
+			if(col.WorldCollisionRect.Collide(rect))
+			{
+				auto damager = col.GameObject.Get!(CDestroyable);
+				if(damager !is null)
+					damager.Damage(damage_type, damage);
+			}
+		}
+	}
+	
+	override
+	void EnemyDead()
+	{
+		EnemyCounter++;
+		TimeOutTime = Game.Time() + 5;
+	}
+	
 	mixin(Prop!("IGameMode", "GameMode", "override", "protected"));
 	mixin(Prop!("CPriorityEvent!()", "DrawEvent", "override", "protected"));
 	mixin(Prop!("CUnorderedEvent!(float)", "LogicEvent", "override", "protected"));
@@ -205,6 +240,8 @@ final class CLevel : CDisposable, ILevel
 	mixin(Prop!("CBitmapManager", "BitmapManager", "override", "protected"));
 	mixin(Prop!("CGameObject", "Player", "override", "protected"));
 protected:
+	float TimeOutTime = -float.infinity;
+	int EnemyCounter = 0;
 	IGameMode GameModeVal;
 
 	CFont Font;
