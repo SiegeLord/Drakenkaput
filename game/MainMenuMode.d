@@ -44,7 +44,8 @@ class CMainMenuMode : CMode
 		FontManager = new CFontManager;
 		Font = FontManager.Load("data/fonts/Font.ttf", 14);
 		TitleFont = FontManager.Load("data/fonts/Font.ttf", 28);
-		//Game.Sfx.PlayMusic("data/music/medium.xm");
+		
+		Game.Sfx.PlayMusic("data/music/the_hunt_for_lars.mod");
 		
 		SoundManager = new CSoundManager;
 		
