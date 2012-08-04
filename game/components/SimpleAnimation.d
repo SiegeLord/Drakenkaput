@@ -113,8 +113,12 @@ class CSimpleAnimation : CGameComponent
 			}
 		}
 		
-		if(Destroyable !is null && (!Destroyable.Immune() || (Time() / 0.05) % 2 == 0))
-			sprite.Draw(Time(), Position.X, Position.Y);
+		auto color = al_map_rgb_f(1, 1, 1);
+		
+		if(Destroyable !is null && Destroyable.Immune() && (cast(int)(Time() / 0.25) % 2 == 0))
+			color = al_map_rgba_f(0.25, 0.25, 0.25, 0.25);
+		
+		sprite.Draw(Time(), Position.X, Position.Y, color);
 	}
 protected:
 	double delegate() Time;

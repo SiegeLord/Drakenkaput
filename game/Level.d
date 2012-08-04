@@ -48,16 +48,20 @@ import game.Clouds;
 import game.components.Destroyable;
 import game.components.Position;
 import game.components.Controller;
+import game.components.Enemy;
 
 import tango.math.Math;
 import tango.io.Stdout;
 import tango.text.convert.Format;
+import tango.core.Array;
 
 import allegro5.allegro;
 import allegro5.allegro_font;
 import allegro5.allegro_primitives;
 
 const float PowerMax = 100;
+
+const size_t[] Primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 
 final class CLevel : CDisposable, ILevel
 {
@@ -105,6 +109,8 @@ final class CLevel : CDisposable, ILevel
 		
 		Clouds = new CClouds(BitmapManager.Load("data/bitmaps/cloud.png"), GameMode, pos, 0.5, 10);
 		
+		EnemiesLeft = 0;
+		
 		int n = 0;
 		while(true)
 		{
@@ -127,6 +133,9 @@ final class CLevel : CDisposable, ILevel
 				assert(obj);
 				pos_comp = obj.Get!(CPosition)();
 				pos_comp = pos;
+				auto enemy = obj.Get!(CEnemy);
+				if(enemy !is null)
+					EnemiesLeft++;
 				
 				m++;
 			}
@@ -134,7 +143,7 @@ final class CLevel : CDisposable, ILevel
 			n++;
 		}
 		
-		PowerMeter = PowerMax;
+		PowerMeter = 0;
 	}
 	
 	void Logic(float dt)
@@ -158,6 +167,16 @@ final class CLevel : CDisposable, ILevel
 			}
 		}
 		
+		if(Dragon)
+		{
+			PowerMeter -= 5 * dt;
+			if(PowerMeter < 0)
+			{
+				PowerMeter = 0;
+				DragonTransformation(false);
+			}
+		}
+		
 		PowerMeterDisp += 0.05 * (PowerMeter - PowerMeterDisp);
 		Clamp(PowerMeterDisp, 0.0f, cast(float)PowerMax);
 		
@@ -176,7 +195,7 @@ final class CLevel : CDisposable, ILevel
 		Clouds.Update(Camera.Position);
 		
 		if(Game.Time() > TimeOutTime)
-			EnemyCounter = 0;
+			ComboCounter = 0;
 	}
 	
 	void Draw()
@@ -197,9 +216,6 @@ final class CLevel : CDisposable, ILevel
 		
 		GameMode.Game.Gfx.ResetTransform();
 		
-		if(EnemyCounter > 0)
-			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), Game.Gfx.ScreenWidth / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", EnemyCounter); 
-		
 		if(Player !is null)
 		{
 			float spacing = 5;
@@ -208,9 +224,16 @@ final class CLevel : CDisposable, ILevel
 			float h = 200;
 			float w = 15;
 			
-			al_draw_filled_rectangle(spacing, sh - spacing - h * HealthFrac, spacing + w, sh - spacing, al_map_rgb_f(1, 0, 0));
+			float health_frac = Dragon ? 1.0f : HealthFrac;
+			auto health_color = Dragon ? al_map_rgb_f(1, 1, 1) : al_map_rgb_f(1, 0, 0);
+			al_draw_filled_rectangle(spacing, sh - spacing - h * health_frac, spacing + w, sh - spacing, health_color);
 			
 			al_draw_filled_rectangle(sw - spacing, sh - spacing - h * (PowerMeterDisp / PowerMax), sw - spacing - w, sh - spacing, al_map_rgb_f(1, 0.5, 0));
+			
+			if(ComboCounter > 0)
+				al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", ComboCounter); 
+			
+			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh - 20 - al_get_font_line_height(Font.Get), ALLEGRO_ALIGN_CENTRE, "Enemies left: %d", EnemiesLeft); 
 		}
 	}
 	
@@ -256,7 +279,7 @@ final class CLevel : CDisposable, ILevel
 	void RemoveObject(CGameObject obj, TObjHolder holder)
 	{
 		Objects.RemoveLater(holder);
-		if(obj == Player)
+		if(obj == Player && !Transforming)
 		{
 			Player = null;
 			PlayerController = null;
@@ -298,8 +321,45 @@ final class CLevel : CDisposable, ILevel
 	override
 	void EnemyDead()
 	{
-		EnemyCounter++;
+		ComboCounter++;
+		EnemiesLeft--;
+		
+		
+		
+		auto idx = Primes.find(ComboCounter);
+		if(idx < Primes.length)
+		{
+			PowerMeter += (idx + 1) * 30;
+			
+			if(PowerMeter >= PowerMax)
+			{
+				PowerMeter = PowerMax;
+				DragonTransformation(true);
+			}
+		}
 		TimeOutTime = Game.Time() + 5;
+	}
+	
+	void DragonTransformation(bool into_dragon)
+	{
+		Transforming = true;
+		auto pos = Player.Get!(CPosition);
+		assert(pos);
+		SVector2D old_pos = pos;
+		
+		Transforming = false;
+		Dragon = into_dragon;
+		
+		auto new_player = new CGameObject(into_dragon ? "data/objects/dragon.cfg" : "data/objects/player.cfg", this, ConfigManager);
+		auto new_controller = new_player.Get!(CController)();
+		PlayerController.CopyInto(new_controller);
+		
+		pos = new_player.Get!(CPosition)();
+		pos = old_pos;
+		
+		Player.Remove();
+		Player = new_player;
+		PlayerController = new_controller;
 	}
 	
 	mixin(Prop!("IGameMode", "GameMode", "override", "protected"));
@@ -309,12 +369,16 @@ final class CLevel : CDisposable, ILevel
 	mixin(Prop!("CBitmapManager", "BitmapManager", "override", "protected"));
 	mixin(Prop!("CGameObject", "Player", "override", "protected"));
 protected:
+	bool Transforming = false;
+	bool Dragon = false;
+	
 	float HealthFrac = 0;
 	float PowerMeter = 0;
 	float PowerMeterDisp = 0;
 	
 	float TimeOutTime = -float.infinity;
-	int EnemyCounter = 0;
+	int ComboCounter = 0;
+	int EnemiesLeft;
 	IGameMode GameModeVal;
 
 	CFont Font;

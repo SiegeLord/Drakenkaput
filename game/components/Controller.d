@@ -155,6 +155,16 @@ class CController : CGameComponent
 			set_move(!no_x);
 		}
 	}
+	
+	void CopyInto(CController other)
+	{
+		other.Left     = Left;
+		other.Right    = Right;
+		other.Up       = Up;  
+		other.Down     = Down;
+		other.LastLeft = LastLeft;
+		other.LastUp   = LastUp;
+	}
 protected:
 	CVelocity Velocity;
 	CDirection Direction;
