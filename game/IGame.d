@@ -39,4 +39,9 @@ interface IGame
 	@property
 	CSfx Sfx();
 	CConfig Options();
+	
+	@property
+	void Password(int pass);
+	@property
+	int Password();
 }

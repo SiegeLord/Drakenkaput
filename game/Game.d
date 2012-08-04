@@ -31,6 +31,7 @@ import game.MainMenuMode;
 import game.GameMode;
 
 import tango.io.Stdout;
+import tango.text.convert.Format;
 
 import allegro5.allegro;
 import allegro5.allegro_image;
@@ -148,6 +149,22 @@ protected:
 		}
 		assert(0);
 	}
+	
+	override
+	@property
+	int Password()
+	{
+		return PasswordVal;
+	}
+	
+	override
+	@property
+	void Password(int pass)
+	{
+		PasswordVal = pass;
+	}
+
+	int PasswordVal;
 
 	ALLEGRO_EVENT_QUEUE* Queue;
 	double TimeVal = 0.0f;

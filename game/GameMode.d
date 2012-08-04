@@ -26,6 +26,7 @@ import game.IGame;
 import game.IGameMode;
 import game.Level;
 
+import tango.core.Array;
 import tango.io.Stdout;
 import tango.io.Path;
 import tango.text.convert.Format;
@@ -41,8 +42,19 @@ class CGameMode : CMode, IGameMode
 	this(IGame game)
 	{
 		super(game);
+		
+		LevelIdx = cast(int)Passwords.find(Game.Password);
+		if(LevelIdx == Passwords.length)
+			LevelIdx = 0;
+		
 		auto ret = LoadLevel();
-		assert(ret);
+		if(!ret)
+		{
+			LevelIdx = 0;
+			Game.Password = 0;
+			ret = LoadLevel();
+			assert(ret);
+		}
 		
 		FontManager = new CFontManager;
 		Font = FontManager.Load("data/fonts/Energon.ttf", 24);
@@ -63,6 +75,9 @@ class CGameMode : CMode, IGameMode
 					LevelIdx++;
 				LoadLevel();
 				Intermission = true;
+				
+				if(Level !is null)
+					Game.Password = Passwords[LevelIdx];
 			}
 		}
 		
@@ -118,6 +133,8 @@ class CGameMode : CMode, IGameMode
 						return EMode.MainMenu;
 					case ALLEGRO_KEY_ENTER:
 						Intermission = false;
+						if(!Level)
+							return EMode.MainMenu;
 						break;
 					default:
 				}

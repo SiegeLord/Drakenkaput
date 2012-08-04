@@ -33,6 +33,9 @@ import allegro5.allegro;
 import allegro5.allegro_font;
 import allegro5.allegro_primitives;
 
+import tango.text.convert.Format;
+import tango.util.Convert;
+
 class CMainMenuMode : CMode
 {
 	this(IGame game)
@@ -48,6 +51,8 @@ class CMainMenuMode : CMode
 		
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
+		
+		PasswordText = Game.Password == 0 ? "" : Format("{}", Game.Password);
 	}
 	
 	override
@@ -70,8 +75,8 @@ class CMainMenuMode : CMode
 		auto select_color = al_map_rgb_f(1, 1, 1);
 		auto normal_color = al_map_rgb_f(0.5, 1, 0.5);
 		
-		al_draw_text(Font.Get, CurChoice == 0 ? select_color : normal_color, mid.X, mid.Y - 20, ALLEGRO_ALIGN_CENTRE, "Continue Game");
-		al_draw_text(Font.Get, CurChoice == 1 ? select_color : normal_color, mid.X, mid.Y, ALLEGRO_ALIGN_CENTRE, "New Game");
+		al_draw_text(Font.Get, CurChoice == 0 ? select_color : normal_color, mid.X, mid.Y - 20, ALLEGRO_ALIGN_CENTRE, "New Game");
+		al_draw_textf(Font.Get, CurChoice == 1 ? select_color : normal_color, mid.X, mid.Y, ALLEGRO_ALIGN_CENTRE, Format("Password: {}\0", PasswordText).ptr);
 		al_draw_text(Font.Get, CurChoice == 2 ? select_color : normal_color, mid.X, mid.Y + 20, ALLEGRO_ALIGN_CENTRE, "Quit");
 		
 		al_draw_text(TitleFont.Get, al_map_rgb_f(0.5, 0.5, 1), title_mid.X, title_mid.Y, ALLEGRO_ALIGN_CENTRE, "Drakenkaput");
@@ -96,13 +101,29 @@ class CMainMenuMode : CMode
 						switch(CurChoice)
 						{
 							case 0:
+								Game.Password = 0;
 								return EMode.Game;
 							case 1:
+								try
+								{
+									Game.Password = to!(int)(PasswordText);
+								}
+								catch(Exception e)
+								{
+									Game.Password = 0;
+								}
 								return EMode.Game;
 							default: goto case;
 							case 2:
 								return EMode.Exit;
 						}
+					case ALLEGRO_KEY_BACKSPACE:
+						if(CurChoice == 1)
+						{
+							if(PasswordText.length)
+								PasswordText = PasswordText[0..$-1];
+						}
+						break;
 					case ALLEGRO_KEY_UP:
 						CurChoice--;
 						UISound.Play;
@@ -118,6 +139,16 @@ class CMainMenuMode : CMode
 							CurChoice = 0;
 						break;
 					default:
+				}
+				break;
+			}
+			case ALLEGRO_EVENT_KEY_CHAR:
+			{
+				if(CurChoice == 1)
+				{
+					auto character = event.keyboard.unichar;
+					if(character > 32 && character < 127 && PasswordText.length < 4)
+						PasswordText ~= cast(char)character;
 				}
 				break;
 			}
@@ -142,6 +173,7 @@ protected:
 	CFontManager FontManager;
 	CSoundManager SoundManager;
 	CSound UISound;
+	const(char)[] PasswordText;
 	
 	CConfigManager ConfigManager;
 	CBitmapManager BitmapManager;
