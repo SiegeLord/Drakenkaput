@@ -144,7 +144,7 @@ protected:
 			
 			mode.Draw();
 			
-			al_flip_display();
+			Gfx.FlipDisplay();
 		}
 		assert(0);
 	}

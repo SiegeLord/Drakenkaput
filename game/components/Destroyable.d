@@ -60,6 +60,12 @@ class CDestroyable : CGameComponent
 		return Time() < ImmuneUntil;
 	}
 	
+	@property
+	float HealthFrac()
+	{
+		return Health / MaxHealth;
+	}
+	
 	mixin(Prop!("float", "Health", "", "protected"));
 protected:
 	CGameObject GameObject;

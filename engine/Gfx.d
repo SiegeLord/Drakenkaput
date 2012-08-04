@@ -36,11 +36,13 @@ class CGfx : CDisposable
 		if(options.Get!(bool)("gfx", "fullscreen", false))
 			al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
 		
-		al_set_new_display_option(ALLEGRO_DISPLAY_OPTIONS.ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
-		al_set_new_display_option(ALLEGRO_DISPLAY_OPTIONS.ALLEGRO_SAMPLES, 4, ALLEGRO_SUGGEST);
+		//al_set_new_display_option(ALLEGRO_DISPLAY_OPTIONS.ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+		//al_set_new_display_option(ALLEGRO_DISPLAY_OPTIONS.ALLEGRO_SAMPLES, 4, ALLEGRO_SUGGEST);
 		
 		Display = al_create_display(options.Get!(int)("gfx", "screen_w", 800), options.Get!(int)("gfx", "screen_h", 600));
+		Backbuffer = al_create_bitmap(al_get_display_width(Display) / 2, al_get_display_height(Display) / 2);
 		al_init_primitives_addon();
+		al_set_target_bitmap(Backbuffer);
 	}
 	
 	override
@@ -53,13 +55,13 @@ class CGfx : CDisposable
 	@property
 	int ScreenWidth()
 	{
-		return al_get_display_width(Display);
+		return al_get_bitmap_width(Backbuffer);
 	}
 	
 	@property
 	int ScreenHeight()
 	{
-		return al_get_display_height(Display);
+		return al_get_bitmap_height(Backbuffer);
 	}
 	
 	@property
@@ -75,9 +77,18 @@ class CGfx : CDisposable
 		al_use_transform(&identity);
 	}
 	
+	void FlipDisplay()
+	{
+		al_set_target_bitmap(al_get_backbuffer(Display));
+		al_draw_scaled_bitmap(Backbuffer, 0, 0, ScreenWidth, ScreenHeight, 0, 0, al_get_display_width(Display), al_get_display_height(Display), 0);
+		al_flip_display();
+		al_set_target_bitmap(Backbuffer);
+	}
+	
 	mixin(Prop!("ALLEGRO_DISPLAY*", "Display", "", "protected"));
 protected:
 	ALLEGRO_DISPLAY* DisplayVal;
+	ALLEGRO_BITMAP* Backbuffer;
 }
 
 void DrawCircleGradient(float cx, float cy, float r1, float r2, ALLEGRO_COLOR color1, ALLEGRO_COLOR color2)

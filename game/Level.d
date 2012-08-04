@@ -43,6 +43,7 @@ import game.GameObject;
 import game.ParticleEmitter;
 import game.ICollisionManager;
 import game.CollisionManager;
+import game.Clouds;
 
 import game.components.Destroyable;
 import game.components.Position;
@@ -56,6 +57,7 @@ import allegro5.allegro;
 import allegro5.allegro_font;
 import allegro5.allegro_primitives;
 
+const float PowerMax = 100;
 
 final class CLevel : CDisposable, ILevel
 {
@@ -92,15 +94,21 @@ final class CLevel : CDisposable, ILevel
 		CollisionManagerVal.UpdateTileMap(TileMap);
 		
 		Player = new CGameObject("data/objects/player.cfg", this, ConfigManager);
+		auto pos = cfg.Get!(SVector2D)("level", "player_start", SVector2D(-1, -1));
+		if(pos.X < 0)
+			pos = SVector2D(0, 0);
+		pos.X *= TileMap.TileWidth;
+		pos.Y *= TileMap.TileHeight;
 		auto pos_comp = Player.Get!(CPosition)();
-		pos_comp.X = 100;
-		pos_comp.Y = 100;
+		pos_comp = pos;
 		PlayerController = Player.Get!(CController)();
+		
+		Clouds = new CClouds(BitmapManager.Load("data/bitmaps/cloud.png"), GameMode, pos, 0.5, 10);
 		
 		int n = 0;
 		while(true)
 		{
-			auto section = Format("enemy_{}", n);
+			auto section = Format("object_{}", n);
 			auto enemy_name = cfg.Get!(const(char)[])(section, "name", "");
 			if(enemy_name == "")
 				break;
@@ -109,7 +117,7 @@ final class CLevel : CDisposable, ILevel
 			while(true)
 			{
 				auto pos_str = Format("pos_{}", m);
-				auto pos = cfg.Get!(SVector2D)(section, pos_str, SVector2D(-1, -1));
+				pos = cfg.Get!(SVector2D)(section, pos_str, SVector2D(-1, -1));
 				if(pos.X < 0)
 					break;
 				pos.X *= TileMap.TileWidth;
@@ -125,6 +133,8 @@ final class CLevel : CDisposable, ILevel
 			
 			n++;
 		}
+		
+		PowerMeter = PowerMax;
 	}
 	
 	void Logic(float dt)
@@ -136,8 +146,20 @@ final class CLevel : CDisposable, ILevel
 		Objects.Prune();
 		
 		CPosition pos;
-		if(Player && Player.Get(pos))
-			Camera.Position = pos.Position;
+		if(Player)
+		{
+			if(Player.Get(pos))
+				Camera.Position = pos.Position;
+			CDestroyable dest;
+			if(Player.Get(dest))
+			{
+				HealthFrac += 0.05 * (dest.HealthFrac - HealthFrac);
+				Clamp(HealthFrac, 0.0f, 1.0f);
+			}
+		}
+		
+		PowerMeterDisp += 0.05 * (PowerMeter - PowerMeterDisp);
+		Clamp(PowerMeterDisp, 0.0f, cast(float)PowerMax);
 		
 		SVector2D min_pos = Game.Gfx.ScreenSize / 2;
 		SVector2D max_pos = TileMap.PixelSize - Game.Gfx.ScreenSize / 2;
@@ -146,10 +168,12 @@ final class CLevel : CDisposable, ILevel
 		
 		Clamp(Camera.Position.X, min_pos.X, max_pos.X);
 		Clamp(Camera.Position.Y, min_pos.Y, max_pos.Y);
-		Camera.Position.X = floor(Camera.Position.X);
-		Camera.Position.Y = floor(Camera.Position.Y);
+		//Camera.Position.X = floor(Camera.Position.X);
+		//Camera.Position.Y = floor(Camera.Position.Y);
 		
 		Camera.Update(Game.Gfx.ScreenSize);
+		
+		Clouds.Update(Camera.Position);
 		
 		if(Game.Time() > TimeOutTime)
 			EnemyCounter = 0;
@@ -157,6 +181,12 @@ final class CLevel : CDisposable, ILevel
 	
 	void Draw()
 	{
+		GameMode.Game.Gfx.ResetTransform();
+		
+		al_clear_to_color(al_map_rgb_f(0.3, 0.3, 0.9));
+		
+		Clouds.Draw(Camera.Position);
+		
 		Camera.UseTransform();
 		
 		TileMap.Draw(Camera.Position - Game.Gfx.ScreenSize / 2, Game.Gfx.ScreenSize);
@@ -168,7 +198,20 @@ final class CLevel : CDisposable, ILevel
 		GameMode.Game.Gfx.ResetTransform();
 		
 		if(EnemyCounter > 0)
-			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), 20, 20, 0, "Combo: %d", EnemyCounter); 
+			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), Game.Gfx.ScreenWidth / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", EnemyCounter); 
+		
+		if(Player !is null)
+		{
+			float spacing = 5;
+			float sh = Game.Gfx.ScreenHeight;
+			float sw = Game.Gfx.ScreenWidth;
+			float h = 200;
+			float w = 15;
+			
+			al_draw_filled_rectangle(spacing, sh - spacing - h * HealthFrac, spacing + w, sh - spacing, al_map_rgb_f(1, 0, 0));
+			
+			al_draw_filled_rectangle(sw - spacing, sh - spacing - h * (PowerMeterDisp / PowerMax), sw - spacing - w, sh - spacing, al_map_rgb_f(1, 0.5, 0));
+		}
 	}
 	
 	void Input(ALLEGRO_EVENT* event)
@@ -266,6 +309,10 @@ final class CLevel : CDisposable, ILevel
 	mixin(Prop!("CBitmapManager", "BitmapManager", "override", "protected"));
 	mixin(Prop!("CGameObject", "Player", "override", "protected"));
 protected:
+	float HealthFrac = 0;
+	float PowerMeter = 0;
+	float PowerMeterDisp = 0;
+	
 	float TimeOutTime = -float.infinity;
 	int EnemyCounter = 0;
 	IGameMode GameModeVal;
@@ -285,6 +332,7 @@ protected:
 	
 	CCamera Camera;
 	CTileMap TileMap;
+	CClouds Clouds;
 
 	CParticleEmitter Emitter;
 	CConfigManager ConfigManagerVal;

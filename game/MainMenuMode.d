@@ -39,8 +39,8 @@ class CMainMenuMode : CMode
 	{
 		super(game);
 		FontManager = new CFontManager;
-		Font = FontManager.Load("data/fonts/Energon.ttf", 24);
-		TitleFont = FontManager.Load("data/fonts/Energon.ttf", 48);
+		Font = FontManager.Load("data/fonts/Energon.ttf", 12);
+		TitleFont = FontManager.Load("data/fonts/Energon.ttf", 24);
 		//Game.Sfx.PlayMusic("data/music/medium.xm");
 		
 		SoundManager = new CSoundManager;
@@ -68,9 +68,9 @@ class CMainMenuMode : CMode
 		auto select_color = al_map_rgb_f(1, 1, 1);
 		auto normal_color = al_map_rgb_f(0.5, 1, 0.5);
 		
-		al_draw_text(Font.Get, CurChoice == 0 ? select_color : normal_color, mid.X, mid.Y - 45, ALLEGRO_ALIGN_CENTRE, "Continue Game");
+		al_draw_text(Font.Get, CurChoice == 0 ? select_color : normal_color, mid.X, mid.Y - 20, ALLEGRO_ALIGN_CENTRE, "Continue Game");
 		al_draw_text(Font.Get, CurChoice == 1 ? select_color : normal_color, mid.X, mid.Y, ALLEGRO_ALIGN_CENTRE, "New Game");
-		al_draw_text(Font.Get, CurChoice == 2 ? select_color : normal_color, mid.X, mid.Y + 45, ALLEGRO_ALIGN_CENTRE, "Quit");
+		al_draw_text(Font.Get, CurChoice == 2 ? select_color : normal_color, mid.X, mid.Y + 20, ALLEGRO_ALIGN_CENTRE, "Quit");
 		
 		al_draw_text(TitleFont.Get, al_map_rgb_f(0.5, 0.5, 1), title_mid.X, title_mid.Y, ALLEGRO_ALIGN_CENTRE, "Drakenkaput");
 	}
