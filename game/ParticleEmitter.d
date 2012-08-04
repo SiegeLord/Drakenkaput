@@ -98,9 +98,13 @@ final class CParticleEmitter
 		StartColorDuration = cfg.Get!(float)("", "start_color_duration", 0);
 		EndColorDuration = cfg.Get!(float)("", "end_color_duration", 0);
 		
+		Reset();
+	}
+	
+	void Reset()
+	{
 		foreach(ref particle; Particles)
 			particle.Life = -1;
-		
 		StartTime = Game.Time;
 	}
 	

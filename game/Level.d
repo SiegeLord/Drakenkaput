@@ -84,9 +84,14 @@ final class CLevel : CDisposable, ILevel
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
 		
-		Emitter = new CParticleEmitter("data/bitmaps/particles.cfg", Game, ConfigManager, BitmapManager);
-		Emitter.Position = Game.Gfx.ScreenSize / 2;
-		Emitter.Theta = -ALLEGRO_PI / 2;
+		RageEmitter = new CParticleEmitter("data/bitmaps/fire_jet_continuous.cfg", Game, ConfigManager, BitmapManager);
+		RageEmitter.Theta = -ALLEGRO_PI / 2;
+		RageEmitter.Active = false;
+		
+		ComboEmitter = new CParticleEmitter("data/bitmaps/fire_explosion.cfg", Game, ConfigManager, BitmapManager);
+		ComboEmitter.Position.Set(Game.Gfx.ScreenWidth / 2, 30);
+		ComboEmitter.Theta = -ALLEGRO_PI / 2;
+		ComboEmitter.Active = false;
 		
 		TileMap = new CTileMap(file, ConfigManager, BitmapManager);
 		
@@ -152,7 +157,8 @@ final class CLevel : CDisposable, ILevel
 	
 	ELevelExit Logic(float dt)
 	{
-		Emitter.Logic(dt);
+		RageEmitter.Logic(dt);
+		ComboEmitter.Logic(dt);
 		
 		LogicEvent.Trigger(dt);
 		
@@ -173,13 +179,15 @@ final class CLevel : CDisposable, ILevel
 		
 		if(Dragon)
 		{
-			PowerMeter -= 5 * dt;
+			PowerMeter -= 15 * dt;
 			if(PowerMeter < 0)
 			{
 				PowerMeter = 0;
 				DragonTransformation(false);
 			}
 		}
+		
+		RageEmitter.Active = Dragon;
 		
 		PowerMeterDisp += 0.05 * (PowerMeter - PowerMeterDisp);
 		Clamp(PowerMeterDisp, 0.0f, cast(float)PowerMax);
@@ -220,11 +228,11 @@ final class CLevel : CDisposable, ILevel
 		
 		TileMap.Draw(Camera.Position - Game.Gfx.ScreenSize / 2, Game.Gfx.ScreenSize);
 		
-		Emitter.Draw();
-		
 		DrawEvent.Trigger();
 		
 		GameMode.Game.Gfx.ResetTransform();
+		
+		ComboEmitter.Draw();
 		
 		if(Player !is null)
 		{
@@ -243,8 +251,12 @@ final class CLevel : CDisposable, ILevel
 			if(ComboCounter > 0)
 				al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", ComboCounter); 
 			
-			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh - 20 - al_get_font_line_height(Font.Get), ALLEGRO_ALIGN_CENTRE, "Enemies left: %d", EnemiesLeft); 
+			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh - 20 - al_get_font_line_height(Font.Get), ALLEGRO_ALIGN_CENTRE, "Enemies left: %d", EnemiesLeft);
+			
+			RageEmitter.Position.Set(sw - spacing - w / 2, sh - spacing - h * (PowerMeterDisp / PowerMax));
 		}
+		
+		RageEmitter.Draw();
 	}
 	
 	void Input(ALLEGRO_EVENT* event)
@@ -373,6 +385,9 @@ final class CLevel : CDisposable, ILevel
 		{
 			PowerMeter += (idx + 1) * 30;
 			
+			ComboEmitter.Reset();
+			ComboEmitter.Active = true;
+			
 			if(PowerMeter >= PowerMax)
 			{
 				PowerMeter = PowerMax;
@@ -451,7 +466,8 @@ protected:
 	CTileMap TileMap;
 	CClouds Clouds;
 
-	CParticleEmitter Emitter;
+	CParticleEmitter RageEmitter;
+	CParticleEmitter ComboEmitter;
 	CConfigManager ConfigManagerVal;
 	CBitmapManager BitmapManagerVal;
 	CCollisionManager CollisionManagerVal;
