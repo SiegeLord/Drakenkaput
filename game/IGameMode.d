@@ -22,6 +22,13 @@ import engine.Util;
 
 import game.IGame;
 
+enum ELevelExit
+{
+	NotYet,
+	NextLevel,
+	RestartLevel
+}
+
 interface IGameMode
 {	
 	@property

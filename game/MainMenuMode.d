@@ -61,6 +61,8 @@ class CMainMenuMode : CMode
 	{
 		al_clear_to_color(al_map_rgb_f(0, 0, 0));
 		
+		Game.Gfx.ResetTransform();
+		
 		auto mid = Game.Gfx.ScreenSize / 2 + SVector2D(0, 50);
 		
 		auto title_mid = Game.Gfx.ScreenSize / 2 - SVector2D(0, 70);

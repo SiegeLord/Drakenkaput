@@ -146,7 +146,7 @@ final class CLevel : CDisposable, ILevel
 		PowerMeter = 0;
 	}
 	
-	void Logic(float dt)
+	ELevelExit Logic(float dt)
 	{
 		Emitter.Logic(dt);
 		
@@ -196,6 +196,12 @@ final class CLevel : CDisposable, ILevel
 		
 		if(Game.Time() > TimeOutTime)
 			ComboCounter = 0;
+		
+		if(Player is null)
+			return ELevelExit.RestartLevel;
+		if(EnemiesLeft <= 0)
+			return ELevelExit.NextLevel;
+		return ELevelExit.NotYet;
 	}
 	
 	void Draw()
