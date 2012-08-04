@@ -17,7 +17,7 @@ endif
 
 INSTALL_PREFIX   = /usr/local
 XFBUILD          = $(shell which xfbuild)
-GAME_NAME        = main
+GAME_NAME        = drakenkaput
 GAME_FILES       = $(wildcard game/*.d game/components/*.d)
 ALLEGRO_VERSION  = 5.1
 ALLEGRO_LD_FLAGS = -L-ldallegro5 $(shell pkg-config $(STATIC_PKG_CONFIG) --libs allegro_ttf$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) allegro_acodec$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) allegro_primitives$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) allegro_image$(STATIC_SUFFIX)-$(ALLEGRO_VERSION) | sed -e 's/-[lL]/-L&/g')

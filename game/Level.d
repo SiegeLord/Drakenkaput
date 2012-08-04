@@ -118,6 +118,9 @@ final class CLevel : CDisposable, ILevel
 		pos_comp = pos;
 		PlayerController = Player.Get!(CController)();
 		
+		ComboScale = cfg.Get!(float)("level", "combo_scale", 10);
+		ComboTimeout = cfg.Get!(float)("level", "combo_timeout", 5);
+		
 		Clouds = new CClouds(BitmapManager.Load("data/bitmaps/cloud.png"), GameMode, pos, 0.5, 10);
 		
 		EnemiesLeft = 0;
@@ -387,7 +390,7 @@ final class CLevel : CDisposable, ILevel
 		auto idx = Primes.find(ComboCounter);
 		if(idx < Primes.length)
 		{
-			PowerMeter += (idx + 1) * 30;
+			PowerMeter += (idx + 1) * ComboScale;
 			
 			ComboEmitter.Reset();
 			ComboEmitter.Active = true;
@@ -398,7 +401,7 @@ final class CLevel : CDisposable, ILevel
 				DragonTransformation(true);
 			}
 		}
-		TimeOutTime = Game.Time() + 5;
+		TimeOutTime = Game.Time() + ComboTimeout;
 	}
 	
 	void DragonTransformation(bool into_dragon)
@@ -449,6 +452,8 @@ protected:
 	bool Transforming = false;
 	bool DragonVal = false;
 	
+	float ComboScale = 10;
+	float ComboTimeout = 5;
 	float HealthFrac = 0;
 	float PowerMeter = 0;
 	float PowerMeterDisp = 0;
