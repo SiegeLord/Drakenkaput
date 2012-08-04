@@ -51,6 +51,7 @@ import game.components.Controller;
 import game.components.FireEffect;
 import game.components.Enemy;
 import game.components.Velocity;
+import game.components.Collision;
 import game.components.Flammable;
 import game.components.Explosion;
 
@@ -414,9 +415,14 @@ final class CLevel : CDisposable, ILevel
 		pos = new_player.Get!(CPosition)();
 		pos = old_pos;
 		
+		CCollision col;
+
 		Player.Remove();
 		Player = new_player;
 		PlayerController = new_controller;
+		
+		if(Player.Get(col))
+			SpawnExplosion("data/objects/fire_explosion.cfg", col.WorldCenter, 0);
 	}
 	
 	void delegate() AddFireEffect(CGameObject obj)

@@ -65,6 +65,8 @@ class CAIController : CGameComponent
 		PrefRangeFrac = config.Get!(float)(ComponentName!(typeof(this)), "pref_range_frac", 0.6);
 		Speed = config.Get!(float)(ComponentName!(typeof(this)), "speed", 20);
 		WeaponLineup = config.Get!(float)(ComponentName!(typeof(this)), "weapon_lineup", 20);
+		
+		Time = &game_obj.Level.Game.Time;
 	}
 	
 	override
@@ -94,6 +96,20 @@ class CAIController : CGameComponent
 		
 		bool no_player = false;
 		
+		SVector2D weapon_dir;
+		weapon_dir.Set(1, 0);
+		
+		bool have_target = false;
+		
+		void set_dir(EDirection dir)
+		{
+			if(Time() > NextDirectionChangeTime && !have_target && Direction !is null)
+			{
+				Direction = dir;
+				NextDirectionChangeTime = Time() + 0.2;
+			}
+		}
+		
 		if(player !is null)
 		{
 			auto player_col = player.Get!(CCollision)();
@@ -108,7 +124,7 @@ class CAIController : CGameComponent
 				if(Weapon !is null)
 				{
 					auto pref_range = PrefRangeFrac * Weapon.Range;
-					auto weapon_dir = player_pos - Position;
+					weapon_dir = player_pos - Position;
 					if(Direction !is null)
 						weapon_dir -= Weapon.GetOffset(Direction);
 
@@ -120,15 +136,18 @@ class CAIController : CGameComponent
 						if(abs(weapon_dir.X) < WeaponLineup || abs(weapon_dir.Y) < WeaponLineup)
 						{
 							Weapon.Fire();
+							MoveDirection.Set(0, 0);
+							set_dir(DirectionFromTheta(atan2(weapon_dir.Y, weapon_dir.X)));
+							have_target = true;
 						}
 					}
+					
+					if(State == EState.Fleeing)
+						dir = -dir;
+					
+					if(State != EState.Wandering && !have_target)
+						MoveDirection = dir;
 				}
-				
-				if(State == EState.Fleeing)
-					dir = -dir;
-				
-				if(State != EState.Wandering)
-					MoveDirection = dir;
 			}
 			else
 			{
@@ -180,12 +199,6 @@ class CAIController : CGameComponent
 		else if(MoveDirection.Y < -buffer)
 			Up = true;
 		
-		void set_dir(EDirection dir)
-		{
-			if(Direction !is null)
-				Direction = dir;
-		}
-		
 		void set_move(bool moving)
 		{
 			if(Moving !is null)
@@ -230,6 +243,7 @@ class CAIController : CGameComponent
 		}
 	}
 protected:
+	double delegate() Time;
 	float SenseRange = 100;
 	float WanderProb = 0.6;
 	float PrefRangeFrac = 0.5;
@@ -239,6 +253,7 @@ protected:
 	EState State;
 	SVector2D MoveDirection;
 	
+	float NextDirectionChangeTime = -float.infinity;
 	CGameObject GameObject;
 	ILevel Level;
 	CVelocity Velocity;

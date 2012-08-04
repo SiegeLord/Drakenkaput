@@ -24,6 +24,7 @@ import engine.Util;
 import engine.ComponentHolder;
 
 import game.GameObject;
+import game.components.Collision;
 
 import tango.io.Stdout;
  
@@ -36,6 +37,7 @@ class CDestroyable : CGameComponent
 		Health = MaxHealth;
 		ImmuneDuration = config.Get!(float)(ComponentName!(typeof(this)), "immune_dur", 0.5);
 		DamageType = config.Get!(const(char)[])(ComponentName!(typeof(this)), "damage_type", "");
+		Explosion = config.Get!(const(char)[])(ComponentName!(typeof(this)), "explosion", "");
 		
 		Time = &game_obj.Level.Game.Time;
 		GameObject = game_obj;
@@ -56,7 +58,12 @@ class CDestroyable : CGameComponent
 			
 			Clamp(HealthVal, 0.0f, MaxHealth);
 			if(Health == 0)
+			{
+				CCollision col;
+				if(GameObject.Get(col))
+					GameObject.Level.SpawnExplosion(Explosion, col.WorldCenter, 0);
 				GameObject.Remove();
+			}
 		}
 	}
 	
@@ -80,4 +87,5 @@ protected:
 	float ImmuneDuration;
 	float ImmuneUntil = -float.infinity;
 	const(char)[] DamageType;
+	const(char)[] Explosion;
 }
