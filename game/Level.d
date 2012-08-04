@@ -20,6 +20,7 @@ module game.Level;
 
 import engine.FontManager;
 import engine.Font;
+import engine.Bitmap;
 import engine.SoundManager;
 import engine.Sound;
 import engine.MathTypes;
@@ -84,6 +85,9 @@ final class CLevel : CDisposable, ILevel
 		
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
+		
+		LifeBar = BitmapManager.Load("data/bitmaps/life_bar.png");
+		FuryBar = BitmapManager.Load("data/bitmaps/fury_bar.png");
 		
 		RageEmitter = new CParticleEmitter("data/bitmaps/fire_jet_continuous.cfg", Game, ConfigManager, BitmapManager);
 		RageEmitter.Theta = -ALLEGRO_PI / 2;
@@ -246,8 +250,10 @@ final class CLevel : CDisposable, ILevel
 			float health_frac = Dragon ? 1.0f : HealthFrac;
 			auto health_color = Dragon ? al_map_rgb_f(1, 1, 1) : al_map_rgb_f(1, 0, 0);
 			al_draw_filled_rectangle(spacing, sh - spacing - h * health_frac, spacing + w, sh - spacing, health_color);
+			al_draw_bitmap(LifeBar.Get, spacing - 7, sh - spacing - h - 14, 0);
 			
 			al_draw_filled_rectangle(sw - spacing, sh - spacing - h * (PowerMeterDisp / PowerMax), sw - spacing - w, sh - spacing, al_map_rgb_f(1, 0.5, 0));
+			al_draw_bitmap(FuryBar.Get, sw - spacing - 7 - w, sh - spacing - h - 14, 0);
 			
 			if(ComboCounter > 0)
 				al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", ComboCounter); 
@@ -477,4 +483,7 @@ protected:
 	CConfigManager ConfigManagerVal;
 	CBitmapManager BitmapManagerVal;
 	CCollisionManager CollisionManagerVal;
+	
+	CBitmap LifeBar;
+	CBitmap FuryBar;
 }
