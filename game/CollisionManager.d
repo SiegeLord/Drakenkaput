@@ -132,8 +132,6 @@ final class CCollisionManager : ICollisionManager
 				add_collision(coll);
 		}
 		
-		
-		
 		bool test_rect(float x, float y)
 		{
 			auto pos = SVector2D(x, y);

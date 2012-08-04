@@ -28,6 +28,7 @@ import game.components.Velocity;
 import game.components.Direction;
 import game.components.Moving;
 import game.components.Position;
+import game.components.Flammable;
 import game.components.Collision;
 import game.components.IWeapon;
 
@@ -55,6 +56,7 @@ class CAIController : CGameComponent
 	override
 	void Load(CGameObject game_obj, CConfig config)
 	{
+		GameObject = game_obj;
 		Level = game_obj.Level;
 		Level.LogicEvent.Register(&Logic);
 		
@@ -137,11 +139,19 @@ class CAIController : CGameComponent
 		{
 			no_player = true;
 		}
+		
+		bool on_fire = false;
+		CFlammable flam;
+		if(GameObject.Get(flam))
+			on_fire = flam.OnFire;
 			
 		if(no_player)
 		{
 			if(State != EState.Wandering)
-				MoveDirection.Set(0, 0);
+			{
+				if(!on_fire)
+					MoveDirection.Set(0, 0);
+			}
 			State = EState.Wandering;
 		}
 		
@@ -149,7 +159,7 @@ class CAIController : CGameComponent
 		
 		if(State == EState.Wandering && rand.uniformR(1.0) < WanderProb * dt)
 		{
-			if(rand.uniformR(1.0) < 0.5)
+			if(rand.uniformR(1.0) < 0.5 || on_fire)
 			{
 				MoveDirection.Set(buffer + 1.0, 0.0);
 				MoveDirection.Rotate(rand.uniformR(2 * PI));
@@ -229,6 +239,7 @@ protected:
 	EState State;
 	SVector2D MoveDirection;
 	
+	CGameObject GameObject;
 	ILevel Level;
 	CVelocity Velocity;
 	CDirection Direction;

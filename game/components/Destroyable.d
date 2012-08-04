@@ -41,6 +41,11 @@ class CDestroyable : CGameComponent
 		GameObject = game_obj;
 	}
 	
+	void Damage(float ammount)
+	{
+		Damage(DamageType, ammount);
+	}
+	
 	void Damage(const(char)[] type, float ammount)
 	{
 		if(!Immune() && type == DamageType)

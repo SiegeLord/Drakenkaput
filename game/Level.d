@@ -48,8 +48,11 @@ import game.Clouds;
 import game.components.Destroyable;
 import game.components.Position;
 import game.components.Controller;
+import game.components.FireEffect;
 import game.components.Enemy;
 import game.components.Velocity;
+import game.components.Flammable;
+import game.components.Explosion;
 
 import tango.math.Math;
 import tango.io.Stdout;
@@ -312,7 +315,7 @@ final class CLevel : CDisposable, ILevel
 	}
 	
 	override
-	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage)
+	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage, bool fire)
 	{
 		foreach(col; CollisionManagerVal.Collisions)
 		{
@@ -321,6 +324,13 @@ final class CLevel : CDisposable, ILevel
 				auto damager = col.GameObject.Get!(CDestroyable);
 				if(damager !is null)
 					damager.Damage(damage_type, damage);
+				
+				if(fire)
+				{
+					auto flammable = col.GameObject.Get!(CFlammable);
+					if(flammable !is null)
+						flammable.SetOnFire();
+				}
 			}
 		}
 	}
@@ -341,6 +351,15 @@ final class CLevel : CDisposable, ILevel
 			pos_comp = pos;
 		if(bullet.Get(vel_comp))
 			vel_comp = vel;
+	}
+	
+	override
+	void SpawnExplosion(const(char)[] bullet_name, SVector2D pos, float theta)
+	{
+		auto explosion = new CGameObject(bullet_name, this, ConfigManager);
+		CExplosion expl;
+		if(explosion.Get(expl))
+			expl.Start(pos, theta);
 	}
 	
 	override
@@ -383,6 +402,16 @@ final class CLevel : CDisposable, ILevel
 		Player.Remove();
 		Player = new_player;
 		PlayerController = new_controller;
+	}
+	
+	void delegate() AddFireEffect(CGameObject obj)
+	{
+		auto fire = new CGameObject("data/objects/fire_effect.cfg", this, ConfigManager);
+		CFireEffect effect;
+		if(fire.Get(effect))
+			effect.Attach(obj);
+		
+		return &effect.ObjectDied;
 	}
 	
 	mixin(Prop!("IGameMode", "GameMode", "override", "protected"));

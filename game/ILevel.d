@@ -61,7 +61,7 @@ interface ILevel
 	@property
 	CGameObject Player();
 	
-	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage);
+	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage, bool fire = false);
 	
 	void EnemyDead();
 	
@@ -70,4 +70,8 @@ interface ILevel
 	bool CheckCollision(SRect rect);
 	
 	bool Dragon();
+	
+	void delegate() AddFireEffect(CGameObject obj);
+	
+	void SpawnExplosion(const(char)[] bullet_name, SVector2D pos, float theta);
 }

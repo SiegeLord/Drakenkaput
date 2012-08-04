@@ -110,7 +110,7 @@ final class CParticleEmitter
 		
 		Clamp(ParticleCounter, cast(float)Particles.length);
 		
-		while(ParticleCounter > 0 && (Duration < 0 || (Game.Time - StartTime) < Duration))
+		while(ParticleCounter > 0 && (Duration < 0 || (Game.Time - StartTime) < Duration) && Active)
 		{
 			Spawn(Game.Time);
 			ParticleCounter -= 1;
@@ -167,6 +167,7 @@ final class CParticleEmitter
 	
 	SVector2D Position;
 	float Theta = 0;
+	bool Active = true;
 protected:
 	float LinearSpawnRadius;
 	float[2] PolarSpawnRadius;

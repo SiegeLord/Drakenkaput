@@ -214,6 +214,11 @@ struct SRect
 		return Max.Y - Min.Y;
 	}
 	
+	SVector2D Middle()
+	{
+		return (Min + Max) / 2;
+	}
+	
 	@property
 	SVector2D Size()
 	{

@@ -53,4 +53,4 @@ const(char)[] FactorySource(const(char)[][] components...)
 }
 
 mixin(FactorySource("Position", "SimpleAnimation", "Velocity", "Controller", "Collision", "Direction", "Moving", "Attacking", "Sword", "AIController",
-"Destroyable", "Enemy", "Gun", "Kamikaze", "BulletAnimation"));
+"Destroyable", "Enemy", "Gun", "Kamikaze", "BulletAnimation", "Flammable", "FireEffect", "Explosion"));

@@ -59,14 +59,19 @@ class CGameObject : CComponentHolder
 	
 	void Remove()
 	{
-		Level.RemoveObject(this, Holder);
-		
-		foreach(comp; Components)
-			(cast(CGameComponent)comp).Unload(this);
+		if(!Removed)
+		{
+			Removed = true;
+			Level.RemoveObject(this, Holder);
+			
+			foreach(comp; Components)
+				(cast(CGameComponent)comp).Unload(this);
+		}
 	}
 	
 	mixin(Prop!("ILevel", "Level", "", "protected"));
 protected:
+	bool Removed = false;
 	ILevel LevelVal;
 	TObjHolder Holder;
 }

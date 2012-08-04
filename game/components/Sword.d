@@ -48,13 +48,16 @@ class CSword : CGameComponent, IWeapon
 	override
 	void Load(CGameObject game_obj, CConfig config)
 	{
-		Duration = config.Get!(float)("Sword", "duration", 0.1);
-		RangeVal = config.Get!(float)("Sword", "range", 32);
-		DamageType = config.Get!(const(char)[])("Sword", "damage_type", "");
-		SwingDistance = config.Get!(float)("Sword", "swing_distance", 16);
-		SwingWidth = config.Get!(float)("Sword", "swing_width", 32);
-		MinDamage = config.Get!(float)("Sword", "min_damage", 1);
-		MaxDamage = config.Get!(float)("Sword", "max_damage", 2);
+		auto name = ComponentName!(typeof(this));
+		Duration = config.Get!(float)(name, "duration", 0.1);
+		RangeVal = config.Get!(float)(name, "range", 32);
+		DamageType = config.Get!(const(char)[])(name, "damage_type", "");
+		SwingDistance = config.Get!(float)(name, "swing_distance", 16);
+		SwingWidth = config.Get!(float)(name, "swing_width", 32);
+		MinDamage = config.Get!(float)(name, "min_damage", 1);
+		MaxDamage = config.Get!(float)(name, "max_damage", 2);
+		FireBreath = config.Get!(bool)(name, "fire_breath", false);
+		FireBreathExplosion = config.Get!(const(char)[])(name, "fire_breath_explosion");
 		
 		Level = game_obj.Level;
 		Time = &game_obj.Level.Game.Time;
@@ -99,7 +102,10 @@ class CSword : CGameComponent, IWeapon
 			}
 			rect.Offset(Position.Position + GetOffset(Direction.Direction));
 			
-			Level.DamageRectangle(rect, DamageType, MaxDamage > MinDamage ? rand.uniformR2(MinDamage, MaxDamage) : MaxDamage);
+			Level.DamageRectangle(rect, DamageType, MaxDamage > MinDamage ? rand.uniformR2(MinDamage, MaxDamage) : MaxDamage, FireBreath);
+			
+			if(FireBreath)
+				Level.SpawnExplosion(FireBreathExplosion, Position.Position + GetOffset(Direction.Direction), Direction.GetTheta());
 		}
 	}
 	
@@ -115,6 +121,7 @@ class CSword : CGameComponent, IWeapon
 		return Offsets[dir];
 	}
 protected:
+	const(char)[] FireBreathExplosion;
 	SVector2D[EDirection.NumDirections] Offsets;
 	CPosition Position;
 	CDirection Direction;
@@ -129,5 +136,6 @@ protected:
 	float NextGoodTime = -float.infinity;
 	float Duration = 0.1;
 	float RangeVal;
+	bool FireBreath = false;
 }
 
