@@ -43,6 +43,8 @@ class CGameMode : CMode, IGameMode
 	{
 		super(game);
 		
+		Game.Sfx.PlayMusic("data/music/evil_minded.mod");
+		
 		LevelIdx = cast(int)Passwords.find(Game.Password);
 		if(LevelIdx == Passwords.length)
 			LevelIdx = 0;
@@ -57,7 +59,7 @@ class CGameMode : CMode, IGameMode
 		}
 		
 		FontManager = new CFontManager;
-		Font = FontManager.Load("data/fonts/Energon.ttf", 24);
+		Font = FontManager.Load("data/fonts/Font.ttf", 24);
 	}
 	
 	override
@@ -98,20 +100,20 @@ class CGameMode : CMode, IGameMode
 			{
 				if(Died)
 				{
-					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2 - 40, ALLEGRO_ALIGN_CENTRE, "You died...", LevelIdx - 1);
-					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2, ALLEGRO_ALIGN_CENTRE, "Press ENTER"); 
-					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2 + 40, ALLEGRO_ALIGN_CENTRE, "to restart level.");
+					al_draw_textf(Font.Get, al_map_rgb_f(1, 0, 0), sw / 2, sh / 2 - 40, ALLEGRO_ALIGN_CENTRE, "You died...", LevelIdx - 1);
+					al_draw_textf(Font.Get, al_map_rgb_f(0.5, 0.5, 0.5), sw / 2, sh / 2, ALLEGRO_ALIGN_CENTRE, "Press ENTER"); 
+					al_draw_textf(Font.Get, al_map_rgb_f(0.5, 0.5, 0.5), sw / 2, sh / 2 + 40, ALLEGRO_ALIGN_CENTRE, "to restart level.");
 				}
 				else
 				{
 					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2 - 40, ALLEGRO_ALIGN_CENTRE, "Cleared level %d!", LevelIdx - 1);
-					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2, ALLEGRO_ALIGN_CENTRE, "Password: %d", Passwords[LevelIdx]); 
-					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2 + 40, ALLEGRO_ALIGN_CENTRE, "Press ENTER..."); 
+					al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 0.2), sw / 2, sh / 2, ALLEGRO_ALIGN_CENTRE, "Password: %d", Passwords[LevelIdx]); 
+					al_draw_textf(Font.Get, al_map_rgb_f(0.5, 0.5, 0.5), sw / 2, sh / 2 + 40, ALLEGRO_ALIGN_CENTRE, "Press ENTER..."); 
 				}
 			}
 			else
 			{
-				al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh / 2, ALLEGRO_ALIGN_CENTRE, "You've won the game!"); 
+				al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 0.2), sw / 2, sh / 2, ALLEGRO_ALIGN_CENTRE, "You've won the game!"); 
 			}
 		}
 		else

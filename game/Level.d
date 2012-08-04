@@ -76,12 +76,9 @@ final class CLevel : CDisposable, ILevel
 		GameMode = mode;
 		
 		FontManager = new CFontManager;
-		Font = FontManager.Load("data/fonts/Energon.ttf", 24);
-		TitleFont = FontManager.Load("data/fonts/Energon.ttf", 48);
-		//Game.Sfx.PlayMusic("data/music/medium.xm");
+		Font = FontManager.Load("data/fonts/Font.ttf", -14);
 		
 		SoundManager = new CSoundManager;
-		UISound = SoundManager.Load("data/sounds/gui.ogg");
 		
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
@@ -256,9 +253,9 @@ final class CLevel : CDisposable, ILevel
 			al_draw_bitmap(FuryBar.Get, sw - spacing - 7 - w, sh - spacing - h - 14, 0);
 			
 			if(ComboCounter > 0)
-				al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", ComboCounter); 
+				al_draw_textf(Font.Get, al_map_rgb_f(1, 0.5, 0), sw / 2, 20, ALLEGRO_ALIGN_CENTRE, "Combo: %d", ComboCounter); 
 			
-			al_draw_textf(Font.Get, al_map_rgb_f(1, 1, 1), sw / 2, sh - 20 - al_get_font_line_height(Font.Get), ALLEGRO_ALIGN_CENTRE, "Enemies left: %d", EnemiesLeft);
+			al_draw_textf(Font.Get, al_map_rgb_f(1, 0.5, 1), sw / 2, sh - 20 - al_get_font_line_height(Font.Get), ALLEGRO_ALIGN_CENTRE, "Enemies left: %d", EnemiesLeft);
 			
 			RageEmitter.Position.Set(sw - spacing - w / 2, sh - spacing - h * (PowerMeterDisp / PowerMax));
 		}
@@ -462,10 +459,8 @@ protected:
 	IGameMode GameModeVal;
 
 	CFont Font;
-	CFont TitleFont;
 	CFontManager FontManager;
 	CSoundManager SoundManager;
-	CSound UISound;
 	
 	CGameObject PlayerVal;
 	CController PlayerController;

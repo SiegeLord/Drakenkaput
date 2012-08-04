@@ -42,12 +42,11 @@ class CMainMenuMode : CMode
 	{
 		super(game);
 		FontManager = new CFontManager;
-		Font = FontManager.Load("data/fonts/Energon.ttf", 12);
-		TitleFont = FontManager.Load("data/fonts/Energon.ttf", 24);
+		Font = FontManager.Load("data/fonts/Font.ttf", 14);
+		TitleFont = FontManager.Load("data/fonts/Font.ttf", 28);
 		//Game.Sfx.PlayMusic("data/music/medium.xm");
 		
 		SoundManager = new CSoundManager;
-		UISound = SoundManager.Load("data/sounds/gui.ogg");
 		
 		ConfigManager = new CConfigManager;
 		BitmapManager = new CBitmapManager;
@@ -73,13 +72,15 @@ class CMainMenuMode : CMode
 		auto title_mid = Game.Gfx.ScreenSize / 2 - SVector2D(0, 70);
 		
 		auto select_color = al_map_rgb_f(1, 1, 1);
-		auto normal_color = al_map_rgb_f(0.5, 1, 0.5);
+		auto normal_color = al_map_rgb_f(1, 1, 0.5);
 		
 		al_draw_text(Font.Get, CurChoice == 0 ? select_color : normal_color, mid.X, mid.Y - 20, ALLEGRO_ALIGN_CENTRE, "New Game");
 		al_draw_textf(Font.Get, CurChoice == 1 ? select_color : normal_color, mid.X, mid.Y, ALLEGRO_ALIGN_CENTRE, Format("Password: {}\0", PasswordText).ptr);
 		al_draw_text(Font.Get, CurChoice == 2 ? select_color : normal_color, mid.X, mid.Y + 20, ALLEGRO_ALIGN_CENTRE, "Quit");
 		
-		al_draw_text(TitleFont.Get, al_map_rgb_f(0.5, 0.5, 1), title_mid.X, title_mid.Y, ALLEGRO_ALIGN_CENTRE, "Drakenkaput");
+		al_draw_text(TitleFont.Get, al_map_rgb_f(1, 0.2, 0.2), title_mid.X, title_mid.Y, ALLEGRO_ALIGN_CENTRE, "Drakenkaput");
+		
+		al_draw_text(Font.Get, al_map_rgb_f(0.5, 0.5, 0.5), title_mid.X, Game.Gfx.ScreenHeight - 20, ALLEGRO_ALIGN_CENTRE, "SiegeLord TINS 2012");
 	}
 	
 	override
@@ -126,14 +127,12 @@ class CMainMenuMode : CMode
 						break;
 					case ALLEGRO_KEY_UP:
 						CurChoice--;
-						UISound.Play;
 						
 						if(CurChoice < 0)
 							CurChoice = 2;
 						break;
 					case ALLEGRO_KEY_DOWN:
 						CurChoice++;
-						UISound.Play;
 						
 						if(CurChoice > 2)
 							CurChoice = 0;
@@ -172,7 +171,6 @@ protected:
 	CFont TitleFont;
 	CFontManager FontManager;
 	CSoundManager SoundManager;
-	CSound UISound;
 	const(char)[] PasswordText;
 	
 	CConfigManager ConfigManager;
