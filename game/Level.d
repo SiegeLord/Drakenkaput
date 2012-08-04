@@ -49,6 +49,7 @@ import game.components.Destroyable;
 import game.components.Position;
 import game.components.Controller;
 import game.components.Enemy;
+import game.components.Velocity;
 
 import tango.math.Math;
 import tango.io.Stdout;
@@ -325,12 +326,28 @@ final class CLevel : CDisposable, ILevel
 	}
 	
 	override
+	bool CheckCollision(SRect rect)
+	{
+		return CollisionManagerVal.TestRectangle(rect);
+	}
+	
+	override
+	void LaunchBullet(const(char)[] bullet_name, SVector2D pos, SVector2D vel)
+	{
+		auto bullet = new CGameObject(bullet_name, this, ConfigManager);
+		CPosition pos_comp;
+		CVelocity vel_comp;
+		if(bullet.Get(pos_comp))
+			pos_comp = pos;
+		if(bullet.Get(vel_comp))
+			vel_comp = vel;
+	}
+	
+	override
 	void EnemyDead()
 	{
 		ComboCounter++;
 		EnemiesLeft--;
-		
-		
 		
 		auto idx = Primes.find(ComboCounter);
 		if(idx < Primes.length)
@@ -374,9 +391,10 @@ final class CLevel : CDisposable, ILevel
 	mixin(Prop!("CConfigManager", "ConfigManager", "override", "protected"));
 	mixin(Prop!("CBitmapManager", "BitmapManager", "override", "protected"));
 	mixin(Prop!("CGameObject", "Player", "override", "protected"));
+	mixin(Prop!("bool", "Dragon", "override", "protected"));
 protected:
 	bool Transforming = false;
-	bool Dragon = false;
+	bool DragonVal = false;
 	
 	float HealthFrac = 0;
 	float PowerMeter = 0;

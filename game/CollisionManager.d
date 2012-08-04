@@ -63,6 +63,45 @@ final class CCollisionManager : ICollisionManager
 		Collisions.Prune();
 	}
 	
+	bool TestRectangle(SRect rect)
+	{
+		if(BoundsRect.CollideBounds(rect) || TestRectVsTilemap(rect))
+		{
+			return true;
+		}
+		else
+		{
+			foreach(coll; Collisions)
+			{
+				if(coll.WorldCollisionRect.Collide(rect))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+	
+	bool TestRectVsTilemap(SRect rect)
+	{
+		auto start_x = cast(int)max(0.0f, rect.Min.X / TileWidth);
+		auto start_y = cast(int)max(0.0f, rect.Min.Y / TileHeight);
+		auto end_x = cast(int)min(rect.Max.X / TileWidth + 1, Width);
+		auto end_y = cast(int)min(rect.Max.Y / TileHeight + 1, Height);
+		
+		foreach(y; start_y..end_y)
+		{
+			foreach(x; start_x..end_x)
+			{
+				SRect tile_rect = void;
+				tile_rect.Set(x * TileWidth, y * TileHeight, (x + 1) * TileWidth, (y + 1) * TileHeight);
+				if(Tiles[y * Width + x].Solid && rect.Collide(tile_rect))
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	/* Not thread safe */
 	SVector2D Move(CCollision collision, SVector2D from, SVector2D to)
 	{
@@ -93,31 +132,13 @@ final class CCollisionManager : ICollisionManager
 				add_collision(coll);
 		}
 		
-		bool test_rect_vs_tilemap(SRect rect)
-		{
-			auto start_x = cast(int)max(0.0f, rect.Min.X / TileWidth);
-			auto start_y = cast(int)max(0.0f, rect.Min.Y / TileHeight);
-			auto end_x = cast(int)min(rect.Max.X / TileWidth + 1, Width);
-			auto end_y = cast(int)min(rect.Max.Y / TileHeight + 1, Height);
-			
-			foreach(y; start_y..end_y)
-			{
-				foreach(x; start_x..end_x)
-				{
-					SRect tile_rect = void;
-					tile_rect.Set(x * TileWidth, y * TileHeight, (x + 1) * TileWidth, (y + 1) * TileHeight);
-					if(Tiles[y * Width + x].Solid && rect.Collide(tile_rect))
-						return true;
-				}
-			}
-			return false;
-		}
+		
 		
 		bool test_rect(float x, float y)
 		{
 			auto pos = SVector2D(x, y);
 			auto rect = SRect(col_rect.Min + pos, col_rect.Max + pos);
-			if(BoundsRect.CollideBounds(rect) || test_rect_vs_tilemap(rect))
+			if(BoundsRect.CollideBounds(rect) || TestRectVsTilemap(rect))
 			{
 				return true;
 			}
@@ -140,7 +161,7 @@ final class CCollisionManager : ICollisionManager
 		
 		assert(!test_rect(from.X, from.Y), "Objects embedded in level geometry or each other");
 		
-		if(eligible_collision_count || BoundsRect.CollideBounds(total_rect) || test_rect_vs_tilemap(total_rect))
+		if(eligible_collision_count || BoundsRect.CollideBounds(total_rect) || TestRectVsTilemap(total_rect))
 		{
 			SVector2D pos;
 			/* Take the first step */

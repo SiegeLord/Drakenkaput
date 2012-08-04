@@ -20,9 +20,9 @@ module game.components.Direction;
 
 enum EDirection
 {
-	Left,
-	Down,
 	Right,
+	Down,
+	Left,
 	Up,
 	NumDirections
 }
@@ -33,7 +33,17 @@ const(char)[] DirectionToString(EDirection dir)
 	if(idir > cast(int)EDirection.Up)
 		assert(0);
 	
-	return ["left", "down", "right", "up"][idir];
+	return ["right", "down", "left", "up"][idir];
+}
+
+EDirection DirectionFromTheta(float theta)
+{
+	while(theta < 0)
+		theta += 2 * PI;
+	while(theta > 2 * PI)
+		theta -= 2 * PI;
+	
+	return cast(EDirection)(EDirection.NumDirections * theta / (2 * PI));
 }
 
 import game.GameObject;

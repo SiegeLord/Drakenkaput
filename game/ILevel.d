@@ -64,4 +64,10 @@ interface ILevel
 	void DamageRectangle(SRect rect, const(char)[] damage_type, float damage);
 	
 	void EnemyDead();
+	
+	void LaunchBullet(const(char)[] bullet_name, SVector2D pos, SVector2D vel);
+	
+	bool CheckCollision(SRect rect);
+	
+	bool Dragon();
 }

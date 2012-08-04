@@ -61,6 +61,8 @@ class CAIController : CGameComponent
 		SenseRange = config.Get!(float)(ComponentName!(typeof(this)), "sense_range", 100);
 		WanderProb = config.Get!(float)(ComponentName!(typeof(this)), "wander_prob", 0.6);
 		PrefRangeFrac = config.Get!(float)(ComponentName!(typeof(this)), "pref_range_frac", 0.6);
+		Speed = config.Get!(float)(ComponentName!(typeof(this)), "speed", 20);
+		WeaponLineup = config.Get!(float)(ComponentName!(typeof(this)), "weapon_lineup", 20);
 	}
 	
 	override
@@ -82,7 +84,7 @@ class CAIController : CGameComponent
 	
 	void Logic(float dt)
 	{
-		float mag = 50;
+		float mag = Speed;
 		
 		auto player = Level.Player;
 		
@@ -108,11 +110,16 @@ class CAIController : CGameComponent
 					if(Direction !is null)
 						weapon_dir -= Weapon.GetOffset(Direction);
 
-					if(weapon_dir.LengthSq < pref_range * pref_range)
+					if(weapon_dir.LengthSq < pref_range * pref_range || Level.Dragon())
 						State = EState.Fleeing;
 					
-					if(weapon_dir.LengthSq < Weapon.Range * Weapon.Range)
-						Weapon.Fire();
+					if(State == EState.Chasing && weapon_dir.LengthSq < Weapon.Range * Weapon.Range)
+					{
+						if(abs(weapon_dir.X) < WeaponLineup || abs(weapon_dir.Y) < WeaponLineup)
+						{
+							Weapon.Fire();
+						}
+					}
 				}
 				
 				if(State == EState.Fleeing)
@@ -216,6 +223,8 @@ protected:
 	float SenseRange = 100;
 	float WanderProb = 0.6;
 	float PrefRangeFrac = 0.5;
+	float Speed;
+	float WeaponLineup;
 
 	EState State;
 	SVector2D MoveDirection;

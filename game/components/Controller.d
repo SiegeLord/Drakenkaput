@@ -49,9 +49,15 @@ class CController : CGameComponent
 		GetComponent(Weapon, holder, this);
 	}
 	
+	override
+	void Load(CGameObject game_obj, CConfig config)
+	{
+		Speed = config.Get!(float)(ComponentName!(typeof(this)), "speed", 100);
+	}
+	
 	void Input(ALLEGRO_EVENT* event)
 	{
-		float mag = 100;
+		float mag = Speed;
 		
 		switch(event.type)
 		{
@@ -166,6 +172,7 @@ class CController : CGameComponent
 		other.LastUp   = LastUp;
 	}
 protected:
+	float Speed;
 	CVelocity Velocity;
 	CDirection Direction;
 	CMoving Moving;
