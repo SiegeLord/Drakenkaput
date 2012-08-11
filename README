@@ -1,7 +1,85 @@
-Music is by Zilly Mike from http://modarchive.org . The following shows the mapping between the original filenames and the new filename.
+%%%%%%%%%%%%%%%%%%%%%
 
-money.xm -> peace.xm
-forestofcalm.xm -> medium.xm
-mega_destruction.xm -> war.xm
+     DrakenKaput
+    
+         by
+    
+      SiegeLord
+      
+         for
+         
+      TINS 2012
 
-Energon font was found at http://www.dafont.com/energon.font .
+%%%%%%%%%%%%%%%%%%%%%
+
+0. Table of Contents
+====================
+
+1. Goal of the game
+2. Controls
+3. Building
+4. TINS Rules
+5. Source code reuse
+6. Resource attributions
+
+1. Goal of the Game
+===================
+Kill anything that moves. Kill multiple enemies in a row for a special bonus ;).
+
+2. Controls
+===========
+Arrow Keys - Move your character
+Left Ctrl - Attack
+Esc - Quit
+Enter - Advance to the next level
+
+3. Building
+===========
+
+Use the provided Makefiles with a DMDFE 2.059 D compiler. On 32 bit linux dmd works best, on 64 bit linux LDC2 works best. On Windows dmd works best. You'll also need DAllegro and TangoD2. I suggest you use the binaries I provide.
+
+4. TINS Rules
+=============
+
+1. Genre requirement: creative anachronism: combine two elements that are obviously from different time area's
+
+Justification:
+Your character wields a sword and can turn into a dragon while fighting modern soldiers with plasma weaponry.
+
+2. Artistic requirement: Here be dragons
+
+Justification:
+Your character can turn into a dragon.
+
+3. Technical requirement #1: Must have way to record progress / save games
+
+Justification:
+Upon completion of a level you are given a password that you can enter in the main menu to continue from that point
+
+4. Technical requirement #2: multilayer scrolling (=parallax scrolling)
+
+Justification:
+Clouds in the background use parallax scrolling
+
+5. Techincal requirement #3: prominent use of prime numbers
+
+Justification:
+Prime number combos yield bonuses. Primes are also used as passwords.
+
+6. Bonus rule: Act of Guttenberg - swap a rule for a rule of an earlier competition, if you re-use code from an entry from that competition (not your own).  You can apply this rule several times if you re-use code from several entries.
+
+Justification:
+Not invoked.
+
+5. Source code reuse
+====================
+
+The bulk of the engine was created before the competition, and was posted in the allegro.cc thread created for this purpose: http://www.allegro.cc/forums/thread/610656
+The paralax code was taken from my SantaHack 2011 entry, Cortex Terror.
+
+6. Resource attributions
+========================
+
+Music is by Zilly Mike from http://modarchive.org .
+
+The font was found at http://www.dafont.com/04b-30.font .
